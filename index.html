@@ -142,6 +142,9 @@
   .ex .n{flex:1;min-width:0;}
   .ex .r b{display:block;font-size:16px;}
   .ex .r span{font-size:13px;color:var(--label2);}
+  .vids{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px;}
+  .vid{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--accent);text-decoration:none;background:color-mix(in srgb,var(--accent) 12%,transparent);border-radius:100px;padding:4px 11px 4px 8px;}
+  .vid svg{width:13px;height:13px;fill:currentColor;}
   .lift .goal{color:var(--on);font-weight:600;font-size:15px;}
 
   /* week */
@@ -337,11 +340,11 @@ const WORKOUTS = [
   { short: 'Full B', title: 'Full Body B', tag: 'Pesi liberi', focus: 'Tutto il corpo · i primi movimenti con i manubri',
     note: `Prima: 5 min di cyclette per scaldarti. Dopo, se hai tempo: 10 min di camminata inclinata.`, ex: [
     ['Goblet squat', 'gambe · manubrio al petto, siediti su una panca se serve', '3×10–12', '2′'],
-    ['Pulley', 'dorso · petto in fuori, scapole che si chiudono', '3×10–12', '90″'],
-    ['Panca manubri', 'petto · piana o poco inclinata', '3×10–12', '90″'],
-    ['Ponte glutei / hip thrust', 'glutei · 1″ di pausa in alto', '3×12–15', '75″'],
+    ['Pulley', 'dorso · petto in fuori, scapole che si chiudono', '3×10–12', '90″', 'pulley basso rematore cavo'],
+    ['Panca manubri', 'petto · piana o poco inclinata', '3×10–12', '90″', 'panca piana con manubri'],
+    ['Ponte glutei / hip thrust', 'glutei · 1″ di pausa in alto', '3×12–15', '75″', 'hip thrust'],
     ['Shoulder press macchina', 'spalle', '2×10–12', '90″'],
-    ['Curl manubri + push-down ai cavi', 'braccia · in superserie, uno dopo l\'altro', '2×12–15', '60″'],
+    ['Curl manubri + push-down ai cavi', 'braccia · in superserie, uno dopo l\'altro', '2×12–15', '60″', [['Curl', 'curl con manubri'], ['Push-down', 'push down ai cavi tricipiti']]],
     ['Dead bug', 'core · zona lombare sempre a terra', '2×8 per lato', '45″'],
   ] },
   { short: 'Cardio', title: 'Cardio leggero', tag: 'Giorni OFF', focus: 'Zona 2 · respiri forte ma riesci a parlare', cardio: true,
@@ -755,6 +758,11 @@ function renderRicette() {
 }
 
 /* ---------- Allenamento ---------- */
+// Video: il 5° campo di un esercizio può essere un testo da cercare su YouTube,
+// un link diretto a un video (https://...), oppure una lista di [etichetta, testo o link].
+const videoUrl = q => q.startsWith('http') ? q : 'https://www.youtube.com/results?search_query=' + encodeURIComponent(q + ' esecuzione corretta');
+const videoLinks = (name, vid) => `<span class="vids">${(Array.isArray(vid) ? vid : [['Guarda come si fa', vid || name]]).map(([l, q]) =>
+  `<a class="vid" href="${videoUrl(q)}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg>${l}</a>`).join('')}</span>`;
 function renderAllenamento() {
   const k = Math.min(WORKOUTS.length - 1, +store.get('wo', 0));
   $('#v-allenamento').innerHTML = `
@@ -780,7 +788,7 @@ function renderAllenamento() {
     const w = WORKOUTS[i];
     $('#wo-body').innerHTML = `<div class="card">
       <div class="wo-h"><span class="tag">${w.tag}</span><h3>${w.title}</h3><p>${w.focus}</p></div>
-      ${w.ex.map(([n, aim, sets, rest], j) => `<div class="row ex"><span class="i">${j + 1}</span><span class="n">${n}<span class="sub">${aim}</span></span><span class="r"><b>${sets}</b><span>${w.cardio ? rest : `rec ${rest}`}</span></span></div>`).join('')}
+      ${w.ex.map(([n, aim, sets, rest, vid], j) => `<div class="row ex"><span class="i">${j + 1}</span><span class="n">${n}<span class="sub">${aim}</span>${w.cardio ? '' : videoLinks(n, vid)}</span><span class="r"><b>${sets}</b><span>${w.cardio ? rest : `rec ${rest}`}</span></span></div>`).join('')}
     </div>${w.note ? `<p class="foot">${w.note}</p>` : ''}`;
   };
   renderWo(k);
