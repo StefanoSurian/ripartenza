@@ -170,6 +170,23 @@
   .tabbar button{flex:1;border:0;background:none;font:inherit;color:var(--label2);display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 0 6px;border-radius:100px;cursor:pointer;font-size:10px;font-weight:600;transition:background .2s,color .2s;}
   .tabbar svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
   .tabbar button.on{color:var(--accent);background:var(--fill);}
+
+  /* ricette */
+  #rand{margin-bottom:12px;}
+  .rand-idle{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .rand-idle .sub{display:block;font-size:13px;color:var(--label2);margin-top:1px;}
+  .btn{flex:none;border:0;font:inherit;font-size:15px;font-weight:600;color:var(--card);background:var(--accent);border-radius:100px;padding:10px 18px;cursor:pointer;white-space:nowrap;}
+  .btn.sec{color:var(--label);background:var(--fill);}
+  .btns{display:flex;gap:8px;padding:0 16px 16px;}
+  summary .r.mut{font-size:13px;}
+  .ing{border-radius:14px;background:var(--fill);padding:2px 12px;margin:2px 0 12px;}
+  .ing div{display:flex;justify-content:space-between;gap:12px;padding:7px 0;color:var(--label);}
+  .ing div+div{border-top:.5px solid var(--sep);}
+  .ing .num{color:var(--label2);white-space:nowrap;text-align:right;}
+  .dbody ol{list-style:none;counter-reset:s;}
+  .dbody ol li{counter-increment:s;padding-left:28px;margin-top:8px;}
+  .dbody ol li::before{content:counter(s);top:1px;left:0;width:20px;height:20px;border-radius:50%;background:var(--fill);color:var(--label2);font-size:11px;font-weight:700;display:grid;place-items:center;}
+  .dbody .tip{margin-top:12px;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,var(--off) 13%,transparent);}
 </style>
 </head>
 <body>
@@ -180,6 +197,7 @@
 
   <section class="view" id="v-piano"></section>
   <section class="view" id="v-dieta"></section>
+  <section class="view" id="v-ricette"></section>
   <section class="view" id="v-allenamento"></section>
   <section class="view" id="v-spesa"></section>
 </div>
@@ -187,6 +205,7 @@
 <nav class="tabbar" id="tabbar">
   <button data-tab="piano"><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 8-8"/><path d="M15 7h5v5"/></svg>Piano</button>
   <button data-tab="dieta"><svg viewBox="0 0 24 24"><path d="M7 3v8a2 2 0 0 1-2 2v0M7 3v8a2 2 0 0 0 2 2M5 3v5M9 3v5M7 13v8"/><path d="M17 21V3c-2.2 1-3.5 3.6-3.5 7v3h3.5"/></svg>Dieta</button>
+  <button data-tab="ricette"><svg viewBox="0 0 24 24"><path d="M4 11h16v3a6 6 0 0 1-6 6h-4a6 6 0 0 1-6-6z"/><path d="M2 11h20"/><path d="M9.5 7.5c0-1.5 1-2 1-3.5M14 7.5c0-1.5 1-2 1-3.5"/></svg>Ricette</button>
   <button data-tab="allenamento"><svg viewBox="0 0 24 24"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/></svg>Allenamento</button>
   <button data-tab="spesa"><svg viewBox="0 0 24 24"><path d="M3 4h2.2l2.3 11h10.8l2.2-8H6.3"/><circle cx="9.5" cy="19.5" r="1.3"/><circle cx="17" cy="19.5" r="1.3"/></svg>Spesa</button>
 </nav>
@@ -408,6 +427,116 @@ const SHOP = {
 
 const MACRO_NOTE = `Proteine ~1,7 g/kg (circa 140 g), grassi ~0,6 g/kg (50 g, ~25% delle calorie), carbo a completare: più alti nei giorni di allenamento, più bassi nei giorni OFF. Media settimanale con 3 ON + 4 OFF ≈ 1.820 kcal. Colazione OFF: media tra dolce e salata, che si equivalgono.`;
 
+const RECIPES = [ // pasto (Pranzo/Cena), giorno (ON/OFF), tempo, ingredienti [nome, quantità], passaggi, errore da evitare
+  { name: 'Pasta, pollo e zucchine', slot: 'Pranzo', day: 'ON', time: '15 min',
+    foods: [['Pasta', '80 g'], ['Petto di pollo', '150 g'], ['Zucchine', '250 g'], ['Olio EVO', '10 g'], ['Grana', '10 g'], ['Aglio, pepe', 'liberi']],
+    steps: [
+      `Metti a bollire l'acqua per la pasta. Taglia il pollo a cubetti e le zucchine a rondelle.`,
+      `Padella antiaderente calda con <b>un cucchiaino</b> dell'olio (~3 g): rosola il pollo 5–6 min finché è dorato.`,
+      `Aggiungi zucchine, uno spicchio d'aglio e un mestolino di acqua della pasta. Coperchio, 5 min.`,
+      `Scola la pasta e saltala in padella per un minuto.`,
+      `Nel piatto: il resto dell'olio <b>a crudo</b> e il grana pesato.`,
+    ],
+    tip: `<b>Errore da evitare:</b> rosolare con un giro d'olio dalla bottiglia. L'olio si pesa, e quasi tutto va a crudo alla fine.` },
+  { name: 'Riso saltato stile wok', slot: 'Pranzo', day: 'ON', time: '15 min',
+    foods: [['Riso', '80 g'], ['Pollo o tacchino', '150 g'], ['Verdure surgelate miste', '250 g'], ['Olio EVO', '10 g'], ['Salsa di soia', '1 cucchiaio'], ['Zenzero o curry', 'liberi']],
+    steps: [
+      `Lessa il riso. Se lo fai la sera prima ed è freddo di frigo, in padella viene ancora meglio.`,
+      `Padella calda con 5 g di olio: salta il pollo a striscioline per 4 min.`,
+      `Aggiungi le verdure <b>senza scongelarle</b>, 5–6 min a fuoco alto.`,
+      `Aggiungi riso e soia e salta tutto per 2 min. Finisci con il resto dell'olio.`,
+    ],
+    tip: `La soia è già salata: <b>niente sale</b> in aggiunta.` },
+  { name: 'Pasta al pomodoro, tonno e capperi', slot: 'Pranzo', day: 'OFF', time: '12 min',
+    foods: [['Pasta', '70 g'], ['Tonno al naturale', '120 g sgocciolato'], ['Passata di pomodoro', '150 g'], ['Capperi sciacquati', '1 cucchiaino'], ['Olio EVO', '10 g'], ['Origano, peperoncino', 'liberi']],
+    steps: [
+      `Scalda la passata con origano e peperoncino per 8 min, <b>senza olio</b>.`,
+      `Spegni e aggiungi tonno e capperi: il tonno non si cuoce, sennò si secca.`,
+      `Condisci la pasta e aggiungi l'olio a crudo.`,
+    ],
+    tip: `<b>Errore da evitare:</b> il tonno sott'olio al posto di quello al naturale. Anche sgocciolato porta ~100 kcal in più.` },
+  { name: 'Pasta e lenticchie', slot: 'Pranzo', day: 'OFF', time: '15 min',
+    foods: [['Lenticchie lessate', '200 g', 'in barattolo'], ['Pasta corta', '40 g'], ['Passata di pomodoro', '100 g'], ['Uovo sodo', '1', 'a parte'], ['Olio EVO', '10 g'], ['Rosmarino', 'libero']],
+    steps: [
+      `In un pentolino: lenticchie sciacquate, passata, rosmarino e 2 bicchieri d'acqua.`,
+      `Quando bolle butta la pasta e cuocila lì dentro, aggiungendo acqua se serve.`,
+      `Servi con l'olio a crudo e l'uovo sodo accanto.`,
+    ],
+    tip: `La pasta è solo 40 g perché i legumi hanno già i loro carbo. L'uovo serve a tenere su le proteine.` },
+  { name: 'Insalata fredda di farro e tonno', slot: 'Pranzo', day: 'OFF', time: '20 min · per 2–3 giorni',
+    foods: [['Farro o riso', '70 g'], ['Tonno al naturale', '120 g sgocciolato'], ['Pomodorini, zucchine grigliate, rucola', '≥250 g'], ['Olio EVO', '10 g'], ['Limone, basilico', 'liberi']],
+    steps: [
+      `Lessa il farro per 2–3 giorni (70 g crudi a porzione), scolalo e raffreddalo subito sotto l'acqua fredda.`,
+      `Griglia le zucchine in padella antiaderente <b>senza olio</b>.`,
+      `Componi i contenitori: farro, tonno, verdure. In frigo durano 3 giorni.`,
+      `L'olio e il limone si aggiungono <b>al momento</b>, pesati.`,
+    ],
+    tip: `Condita prima, l'insalata si inzuppa e la porzione d'olio diventa impossibile da controllare.` },
+  { name: 'Merluzzo al forno con patate croccanti', slot: 'Cena', day: 'ON', time: '25 min',
+    foods: [['Merluzzo', '200 g', 'anche surgelato'], ['Patate', '300 g'], ['Verdure', '250 g'], ['Olio EVO', '15 g'], ['Limone, prezzemolo, paprika', 'liberi']],
+    steps: [
+      `Patate a cubetti al <b>microonde 8 min</b> in una ciotola coperta con 2 cucchiai d'acqua.`,
+      `In teglia con carta forno, 5 g di olio e paprika, girale bene: 220 °C per 15 min. Vengono croccanti come fritte.`,
+      `Nello stesso momento in forno anche il merluzzo, con limone e prezzemolo, <b>senza olio</b>: 12–15 min.`,
+      `Sul piatto il resto dell'olio a crudo, su pesce e verdure.`,
+    ] },
+  { name: 'Salmone in padella', slot: 'Cena', day: 'ON', time: '10 min · 1–2 volte a sett.',
+    foods: [['Salmone', '150 g'], ['Pane oppure patate', '90 / 300 g'], ['Verdure', '250 g'], ['Olio EVO', '5 g']],
+    steps: [
+      `Padella antiaderente calda e <b>senza olio</b>: il salmone rilascia il suo grasso.`,
+      `Lato pelle per 4–5 min finché è croccante, poi 2 min dall'altro lato.`,
+      `I 5 g di olio solo sulle verdure.`,
+    ],
+    tip: `Il salmone è più calorico del pesce bianco, per questo l'olio scende a 5 g. Grassi buoni, va benissimo.` },
+  { name: 'Pollo al limone con verdure in teglia', slot: 'Cena', day: 'ON', time: '25 min',
+    foods: [['Petto di pollo a fette', '200 g'], ['Patate', '300 g'], ['Peperoni, zucchine, cipolla', '250 g'], ['Olio EVO', '15 g'], ['Limone, rosmarino, aglio in polvere', 'liberi']],
+    steps: [
+      `Patate a cubetti al microonde 8 min, come sopra.`,
+      `In una teglia grande: patate e verdure a pezzi con 5 g di olio, rosmarino e aglio. 220 °C per 10 min.`,
+      `Aggiungi il pollo con succo di limone e spezie e rimetti in forno per 12–15 min.`,
+      `Il resto dell'olio a crudo nel piatto.`,
+    ],
+    tip: `Fette sottili = pollo morbido. Ben cotto dentro, senza parti rosa, ma non lasciarlo in forno di più.` },
+  { name: 'Burger di manzo, patate e insalata', slot: 'Cena', day: 'OFF', time: '20 min',
+    foods: [['Macinato di manzo 5%', '200 g'], ['Patate', '200 g'], ['Insalata e pomodori', '300 g'], ['Olio EVO', '15 g'], ['Senape', 'a piacere']],
+    steps: [
+      `Patate al microonde e poi in forno, come nel merluzzo.`,
+      `Forma il burger con carne, sale e pepe: non servono uova né pangrattato.`,
+      `Piastra o padella <b>ben calda e senza olio</b>: 3–4 min per lato. Schiaccialo poco, sennò perde i succhi.`,
+      `Tutto l'olio va sull'insalata.`,
+    ],
+    tip: `Come salsa la senape. Il ketchup ha zucchero, la maionese è quasi solo grasso.` },
+  { name: 'Frittata di zucchine al forno', slot: 'Cena', day: 'OFF', time: '25 min',
+    foods: [['Uova', '3'], ['Albumi', '100 g'], ['Zucchine', '300 g'], ['Pane', '60 g'], ['Olio EVO', '5 g'], ['Erbe, sale, pepe', 'liberi']],
+    steps: [
+      `Zucchine a rondelle sottili in padella con un dito d'acqua e il coperchio, 5 min.`,
+      `Sbatti uova e albumi con sale ed erbe e aggiungi le zucchine.`,
+      `Teglia piccola con carta forno, 180 °C per 18–20 min.`,
+      `I 5 g di olio a crudo alla fine.`,
+    ],
+    tip: `Al forno viene bene senza olio. In padella ne servirebbe molto di più per non farla attaccare.` },
+  { name: 'Tacchino alla piastra con minestrone', slot: 'Cena', day: 'OFF', time: '15 min',
+    foods: [['Fesa di tacchino a fette', '200 g'], ['Minestrone surgelato', '300 g'], ['Pane', '60 g'], ['Olio EVO', '15 g'], ['Salvia, limone', 'liberi']],
+    steps: [
+      `Minestrone in pentola con un bicchiere d'acqua, 10–12 min, <b>senza soffritto</b>.`,
+      `Intanto piastra calda senza olio: tacchino 2–3 min per lato con salvia.`,
+      `Olio a crudo diviso tra minestrone e carne, limone sul tacchino.`,
+    ],
+    tip: `Il minestrone (300 g ≈ 90 kcal) riempie tanto: è il trucco per cenare "tanto" nei giorni OFF.` },
+];
+
+const KITCHEN = [
+  ["L'olio si pesa, sempre", `La regola più importante. Versato dalla bottiglia, 10 g diventano facilmente 30 g: <b>180 kcal in più</b> senza accorgertene. Mettilo in un cucchiaio sulla bilancia.`],
+  ['Olio a crudo, alla fine', `Cuoci in padella antiaderente ben calda con pochissimo olio (o un dito d'acqua) e aggiungi il resto sul piatto pronto. Più sapore, stessi grammi.`],
+  ['Niente fritto e niente impanato', `Pastella e panatura assorbono olio come spugne: una cotoletta può avere il doppio delle calorie del petto da cui parte. La <b>friggitrice ad aria</b> va bene, con al massimo 1 cucchiaino d'olio.`],
+  ['I sughi "nascosti"', `Panna, burro, pesto pronto, maionese e formaggi fusi sono quasi tutto grasso. Usa passata, limone, senape, aceto balsamico, spezie ed erbe: praticamente zero calorie.`],
+  ['Crudo o cotto?', `Il piano pesa a crudo. Se ti capita di pesare il cotto: <ul><li><b>pasta</b> 80 g cruda ≈ 180–200 g cotta</li><li><b>riso</b> 80 g crudo ≈ 220–240 g cotto</li><li><b>pollo</b> 150 g crudo ≈ 110 g cotto</li></ul>`],
+  ['Il sale', `Non fa ingrassare, ma trattiene acqua: dopo una cena salata la bilancia può segnare +0,5 kg che non sono grasso. Moderazione, e spezie al posto del sale (paprika, curry, rosmarino, aglio in polvere).`],
+  ['Pollo morbido', `Fette sottili: 3–4 min per lato in padella. Ben cotto dentro, senza parti rosa, ma non oltre: è così che diventa stopposo.`],
+];
+
+const BATCH = `<ul><li><b>Pollo:</b> 1 kg di petti a fette con spezie e limone, 200 °C per 18–20 min. Pesalo prima di cuocerlo e dividilo in porzioni da 150 g crude.</li><li><b>Carbo:</b> un pentolone di riso o farro. Scolalo, stendilo su un piatto per raffreddarlo in fretta e mettilo in frigo <b>entro un paio d'ore</b>.</li><li><b>Verdure:</b> una teglia di zucchine, peperoni e melanzane grigliate, senza olio. L'olio si aggiunge pesato quando mangi.</li><li><b>Conservazione:</b> in frigo 3 giorni. Per giovedì e venerdì congela le porzioni.</li></ul>`;
+
 /* ============================================================
    LAYOUT
    ============================================================ */
@@ -579,6 +708,52 @@ function renderDieta() {
   bindSeg('seg-day', i => { store.set('day', i); renderDay(i); });
 }
 
+/* ---------- Ricette ---------- */
+const recipeSub = r => `${r.slot} · giorno ${r.day}`;
+const recipeBody = r => `<div class="dbody">
+  <div class="ing">${r.foods.map(([n, q, note]) => `<div><span>${n}${note ? ` <i>· ${note}</i>` : ''}</span><span class="num">${q}</span></div>`).join('')}</div>
+  <ol>${r.steps.map(s => `<li>${s}</li>`).join('')}</ol>
+  ${r.tip ? `<p class="tip">${r.tip}</p>` : ''}
+</div>`;
+function renderRicette() {
+  const F = ['Tutte', 'Pranzo', 'Cena'];
+  let f = Math.min(F.length - 1, +store.get('rf', 0)), lastR = null;
+  $('#v-ricette').innerHTML = `
+    <div class="sticky">${seg('seg-rf', F, f, 'sm')}</div>
+    <div id="rand"></div>
+    <div class="card" id="rec-list"></div>
+    <p class="foot">Grammature del piano, sempre a crudo. L'olio indicato è il totale della ricetta: pesalo.</p>
+
+    <h2>Regole in cucina</h2>
+    <div class="card">${KITCHEN.map(([t, b]) => disclosure(t, b)).join('')}</div>
+
+    <h2>Batch cooking</h2>
+    <div class="card">${disclosure('La domenica: 1 ora per 4–5 pasti', BATCH)}</div>`;
+
+  const list = () => RECIPES.filter(r => !f || r.slot === F[f]);
+  const idle = () => {
+    $('#rand').innerHTML = `<div class="card pad rand-idle"><div><b>Non sai cosa cucinare?</b><span class="sub">${f ? `Ne pesco una per ${F[f].toLowerCase()}` : 'Ne pesco una tra tutte'}</span></div><button class="btn" id="roll">Ricetta a caso</button></div>`;
+    $('#roll').onclick = roll;
+  };
+  const roll = () => {
+    const l = list(); let r;
+    do r = l[Math.floor(Math.random() * l.length)]; while (l.length > 1 && r === lastR);
+    lastR = r;
+    $('#rand').innerHTML = `<div class="card">
+      <div class="wo-h"><span class="tag">Ricetta a caso</span><h3>${r.name}</h3><p>${recipeSub(r)} · ${r.time}</p></div>
+      ${recipeBody(r)}
+      <div class="btns"><button class="btn" id="roll">Un'altra</button><button class="btn sec" id="unroll">Chiudi</button></div>
+    </div>`;
+    $('#roll').onclick = roll;
+    $('#unroll').onclick = idle;
+  };
+  const renderList = () => {
+    $('#rec-list').innerHTML = list().map(r => `<details><summary><span>${r.name}<span class="sub">${recipeSub(r)}</span></span><span class="r mut">${r.time.split(' · ')[0]}</span></summary>${recipeBody(r)}</details>`).join('');
+  };
+  idle(); renderList();
+  bindSeg('seg-rf', i => { f = i; store.set('rf', i); idle(); renderList(); });
+}
+
 /* ---------- Allenamento ---------- */
 function renderAllenamento() {
   const k = Math.min(WORKOUTS.length - 1, +store.get('wo', 0));
@@ -643,7 +818,7 @@ function renderSpesa() {
 }
 
 /* ---------- Tab ---------- */
-const TITLES = { piano: 'Piano', dieta: 'Dieta', allenamento: 'Allenamento', spesa: 'Spesa' };
+const TITLES = { piano: 'Piano', dieta: 'Dieta', ricette: 'Ricette', allenamento: 'Allenamento', spesa: 'Spesa' };
 function go(tab, scroll = true) {
   document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'v-' + tab));
   document.querySelectorAll('.tabbar button').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
@@ -653,7 +828,7 @@ function go(tab, scroll = true) {
 }
 $('#tabbar').addEventListener('click', e => { const b = e.target.closest('button'); if (b) go(b.dataset.tab); });
 
-renderPiano(); renderDieta(); renderAllenamento(); renderSpesa();
+renderPiano(); renderDieta(); renderRicette(); renderAllenamento(); renderSpesa();
 const saved = store.get('tab', 'piano');
 go(TITLES[saved] ? saved : 'piano', false);
 </script>
