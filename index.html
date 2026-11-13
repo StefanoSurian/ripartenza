@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ripartenza">
+<meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="apple-touch-icon.png">
+<title>Ripartenza 26/27</title>
+<style>
+  :root{
+    color-scheme:light dark;
+    --bg:#f2f2f7; --card:#fff; --fill:rgba(118,118,128,.12); --thumb:#fff;
+    --sep:rgba(60,60,67,.18);
+    --label:#000; --label2:rgba(60,60,67,.62); --label3:rgba(60,60,67,.32);
+    --accent:#0a7bc2; --on:#28a745; --off:#e8820c;
+    --p:#3478f6; --c:#f5a524; --g:#2bbf8a;
+    --bar:rgba(249,249,251,.72);
+    --round:ui-rounded,-apple-system,BlinkMacSystemFont,"SF Pro Rounded",system-ui,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#000; --card:#1c1c1e; --fill:rgba(118,118,128,.24); --thumb:#636366;
+      --sep:rgba(84,84,88,.5);
+      --label:#fff; --label2:rgba(235,235,245,.6); --label3:rgba(235,235,245,.28);
+      --accent:#64d2ff; --on:#30d158; --off:#ff9f0a;
+      --p:#5e9eff; --c:#ffb340; --g:#4fd8a6;
+      --bar:rgba(30,30,32,.7);
+    }
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    background:var(--bg);color:var(--label);
+    font:16px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,"Segoe UI",sans-serif;
+    letter-spacing:-.01em;
+    padding:env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);
+  }
+  b{font-weight:600;}
+  .num{font-variant-numeric:tabular-nums;}
+  .mut{color:var(--label2);}
+
+  .wrap{max-width:640px;margin:0 auto;padding:0 16px calc(110px + env(safe-area-inset-bottom));}
+  .eyebrow{font-size:13px;font-weight:600;color:var(--label2);text-transform:uppercase;letter-spacing:.04em;padding-top:18px;}
+  h1{font-size:34px;font-weight:700;letter-spacing:-.025em;line-height:1.15;margin:2px 0 16px;}
+  h2{font-size:20px;font-weight:700;letter-spacing:-.02em;margin:30px 4px 10px;}
+  .foot{font-size:13px;color:var(--label2);margin:10px 4px 0;line-height:1.45;}
+  .foot b{color:var(--label);}
+
+  .view{display:none;}
+  .view.active{display:block;}
+
+  /* cards & lists */
+  .card{background:var(--card);border-radius:22px;overflow:hidden;}
+  .card+.card{margin-top:12px;}
+  .pad{padding:16px;}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;min-height:48px;position:relative;}
+  .row+.row::before,.row+details::before,details+.row::before,details+details::before{content:'';position:absolute;top:0;left:16px;right:0;border-top:.5px solid var(--sep);}
+  .row .r,summary .r{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;}
+  .row .sub,summary .sub{display:block;font-size:13px;color:var(--label2);margin-top:1px;}
+  .row.stack{display:block;}
+  .row.stack p{font-size:14px;color:var(--label2);margin-top:3px;line-height:1.45;}
+  .row.stack p b{color:var(--label);}
+
+  /* disclosures */
+  details{position:relative;}
+  summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;min-height:48px;}
+  summary::-webkit-details-marker{display:none;}
+  summary>span:first-child{flex:1;min-width:0;}
+  summary::after{content:'';flex:none;width:8px;height:8px;border-right:2px solid var(--label3);border-bottom:2px solid var(--label3);transform:rotate(-45deg);transition:transform .2s;margin-right:4px;}
+  details[open]>summary::after{transform:rotate(45deg);}
+  .dbody{padding:0 16px 14px;font-size:14px;line-height:1.5;color:var(--label2);}
+  .dbody b{color:var(--label);}
+  .dbody i{font-style:normal;color:var(--label3);}
+  .dbody p+p{margin-top:8px;}
+  .dbody ul{list-style:none;}
+  .dbody li{padding-left:14px;position:relative;margin-top:4px;}
+  .dbody li::before{content:'';position:absolute;left:2px;top:.62em;width:4px;height:4px;border-radius:50%;background:var(--label3);}
+
+  /* segmented */
+  .sticky{position:sticky;top:env(safe-area-inset-top);z-index:20;margin:0 -16px;padding:8px 16px 10px;background:var(--bg);}
+  .seg{--n:2;--i:0;position:relative;display:flex;background:var(--fill);border-radius:100px;padding:3px;}
+  .seg::before{content:'';position:absolute;top:3px;bottom:3px;left:3px;width:calc((100% - 6px)/var(--n));border-radius:100px;background:var(--thumb);box-shadow:0 2px 8px rgba(0,0,0,.12),0 0 0 .5px rgba(0,0,0,.04);transform:translateX(calc(var(--i)*100%));transition:transform .28s cubic-bezier(.3,.7,.2,1);}
+  .seg button{flex:1;position:relative;z-index:1;border:0;background:none;font:inherit;font-size:14px;font-weight:600;color:var(--label);padding:7px 2px;cursor:pointer;white-space:nowrap;letter-spacing:-.01em;}
+  .seg button:not(.on){color:var(--label2);}
+  .seg.sm button{font-size:13px;padding:5px 2px;}
+
+  /* hero */
+  .hero-top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;}
+  .big{font-family:var(--round);font-size:44px;font-weight:700;line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums;}
+  .big small{font-size:20px;font-weight:600;color:var(--label2);letter-spacing:-.01em;}
+  .kicker{font-size:13px;color:var(--label2);font-weight:500;margin-bottom:6px;}
+  .chart{display:block;width:100%;height:auto;margin-top:14px;overflow:visible;}
+  .chart text{font:500 10px -apple-system,system-ui,sans-serif;fill:var(--label2);}
+  .chips{display:grid;grid-template-columns:repeat(4,1fr);border-top:.5px solid var(--sep);}
+  .chips div{padding:12px 4px;text-align:center;}
+  .chips div+div{border-left:.5px solid var(--sep);}
+  .chips span{display:block;font-size:11px;color:var(--label2);text-transform:uppercase;letter-spacing:.03em;}
+  .chips b{font-family:var(--round);font-size:17px;font-variant-numeric:tabular-nums;}
+
+  /* day summary */
+  .day-sum{display:flex;align-items:center;gap:18px;}
+  .day-sum .big{color:var(--tone);}
+  .macros{flex:1;display:grid;gap:7px;}
+  .mrow{display:grid;grid-template-columns:16px 1fr 44px;align-items:center;gap:8px;font-size:13px;}
+  .mrow i{font-style:normal;font-weight:700;color:var(--m);}
+  .mrow .track{height:6px;border-radius:3px;background:var(--fill);overflow:hidden;}
+  .mrow .track div{height:100%;border-radius:3px;background:var(--m);}
+  .mrow span{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;}
+  .tone-on{--tone:var(--on);} .tone-off{--tone:var(--off);}
+
+  /* meal */
+  .meal-h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:16px 16px 4px;}
+  .meal-h h3{font-size:19px;font-weight:700;letter-spacing:-.02em;}
+  .meal-h .sub{font-size:13px;color:var(--label2);}
+  .meal-h .kcal{font-family:var(--round);font-size:19px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .meal-h .kcal small{font-size:12px;color:var(--label2);font-weight:600;}
+  .mline{display:flex;gap:12px;align-items:center;padding:4px 16px 10px;font-size:13px;color:var(--label2);font-variant-numeric:tabular-nums;}
+  .mline b{color:var(--label);}
+  .mline .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;vertical-align:1px;}
+  .split{display:flex;height:4px;border-radius:2px;overflow:hidden;flex:1;min-width:40px;gap:2px;}
+  .split div{height:100%;border-radius:2px;}
+  .food .q{font-variant-numeric:tabular-nums;color:var(--label2);white-space:nowrap;}
+  .food .n small{color:var(--label2);font-size:13px;}
+  .inner-seg{padding:4px 16px 8px;}
+  .vmeta{font-size:12px;color:var(--label2);text-align:center;margin-top:6px;font-variant-numeric:tabular-nums;}
+  .sumtag{font-size:15px;}
+  .sumtag em{font-style:normal;color:var(--label2);font-size:13px;margin-left:6px;}
+
+  /* workout */
+  .wo-h{padding:18px 16px 8px;}
+  .wo-h .tag{display:inline-block;font-size:12px;font-weight:600;color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent);border-radius:100px;padding:3px 10px;margin-bottom:8px;}
+  .wo-h h3{font-size:24px;font-weight:700;letter-spacing:-.025em;}
+  .wo-h p{font-size:14px;color:var(--label2);}
+  .ex{align-items:flex-start;}
+  .ex .i{flex:none;width:24px;height:24px;border-radius:50%;background:var(--fill);font-size:12px;font-weight:600;display:grid;place-items:center;color:var(--label2);margin-top:1px;font-variant-numeric:tabular-nums;}
+  .ex .n{flex:1;min-width:0;}
+  .ex .r b{display:block;font-size:16px;}
+  .ex .r span{font-size:13px;color:var(--label2);}
+  .lift .goal{color:var(--on);font-weight:600;font-size:15px;}
+
+  /* week */
+  .wk .d{width:40px;flex:none;font-weight:600;color:var(--label2);font-size:14px;}
+  .wk .w{flex:1;}
+  .wk.rest .w{color:var(--label2);}
+  .pill{font-size:12px;font-weight:700;border-radius:100px;padding:3px 9px;letter-spacing:.02em;}
+  .pill.on{color:var(--on);background:color-mix(in srgb,var(--on) 15%,transparent);}
+  .pill.off{color:var(--off);background:color-mix(in srgb,var(--off) 15%,transparent);}
+  .pill.opt{color:var(--label2);background:var(--fill);}
+
+  /* table */
+  table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;}
+  th{font-size:12px;font-weight:600;color:var(--label2);text-transform:uppercase;letter-spacing:.03em;text-align:right;padding:12px 16px 6px;}
+  th:first-child,td:first-child{text-align:left;}
+  td{padding:10px 16px;text-align:right;border-top:.5px solid var(--sep);}
+  tfoot td{font-weight:700;font-family:var(--round);font-size:17px;}
+  .c-on{color:var(--on);} .c-off{color:var(--off);}
+
+  .note{border-radius:22px;padding:16px;background:color-mix(in srgb,var(--accent) 10%,var(--card));font-size:14px;line-height:1.5;color:var(--label2);margin-top:12px;}
+  .note h4{font-size:16px;color:var(--label);margin-bottom:4px;letter-spacing:-.01em;}
+  .note b{color:var(--label);}
+
+  /* tab bar */
+  .tabbar{position:fixed;z-index:50;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 6px);width:calc(100% - 32px);max-width:420px;display:flex;padding:5px;border-radius:100px;background:var(--bar);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);box-shadow:0 0 0 .5px var(--sep),0 10px 30px rgba(0,0,0,.18);}
+  .tabbar button{flex:1;border:0;background:none;font:inherit;color:var(--label2);display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 0 6px;border-radius:100px;cursor:pointer;font-size:10px;font-weight:600;transition:background .2s,color .2s;}
+  .tabbar svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+  .tabbar button.on{color:var(--accent);background:var(--fill);}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="eyebrow">Ripartenza · 26/27</div>
+  <h1 id="title">Piano</h1>
+
+  <section class="view" id="v-piano"></section>
+  <section class="view" id="v-dieta"></section>
+  <section class="view" id="v-allenamento"></section>
+  <section class="view" id="v-spesa"></section>
+</div>
+
+<nav class="tabbar" id="tabbar">
+  <button data-tab="piano"><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 8-8"/><path d="M15 7h5v5"/></svg>Piano</button>
+  <button data-tab="dieta"><svg viewBox="0 0 24 24"><path d="M7 3v8a2 2 0 0 1-2 2v0M7 3v8a2 2 0 0 0 2 2M5 3v5M9 3v5M7 13v8"/><path d="M17 21V3c-2.2 1-3.5 3.6-3.5 7v3h3.5"/></svg>Dieta</button>
+  <button data-tab="allenamento"><svg viewBox="0 0 24 24"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/></svg>Allenamento</button>
+  <button data-tab="spesa"><svg viewBox="0 0 24 24"><path d="M3 4h2.2l2.3 11h10.8l2.2-8H6.3"/><circle cx="9.5" cy="19.5" r="1.3"/><circle cx="17" cy="19.5" r="1.3"/></svg>Spesa</button>
+</nav>
+
+<script>
+/* ============================================================
+   DATI — modifica qui. Il layout sotto si aggiorna da solo.
+   Nei testi puoi usare <b>grassetto</b> e <i>testo grigio</i>.
+   ============================================================ */
+
+const BLOCK = {
+  start: '2026-11-16', weeks: 16, deloads: [6, 12],
+  kicker: 'Ripartenza · 85 → ~78 kg',
+  deloadLabel: 'settimana leggera', deloadText: '2 serie per esercizio, stessi carichi',
+  route: [ // data, kg, etichetta
+    ['2026-11-16', 85, 'Nov'], ['2026-12-13', 82.6, 'Dic'], ['2027-01-10', 81.5, 'Gen'],
+    ['2027-02-07', 79.7, 'Feb'], ['2027-03-07', 78, 'Mar'],
+  ],
+  stats: [['Start', '85'], ['Marzo', '~78'], ['Vita', '111'], ['Split', '3× Full']],
+  measures: [ // misura, nota, oggi, obiettivo
+    ['Peso', '', '85 kg', '~78 a marzo'],
+    ['Vita', "all'ombelico · il numero chiave", '111 cm', '~102–104 a marzo'],
+    ['Torace', '', '102 cm', 'scende poco'],
+    ['Vita / altezza', 'in salute sotto 0,5', '0,66', '~0,62 a marzo'],
+    ['Massa grassa stimata', 'da altezza e vita', '~34%', '~30% a marzo'],
+  ],
+  energy: [
+    ['Mantenimento stimato', '~2.300 kcal'],
+    ['Deficit medio', '~500 kcal/giorno'],
+    ['Media settimanale', '~1.820 kcal'],
+    ['Calo atteso', '−0,4/0,6 kg/sett'],
+    ['Dopo marzo', '2 sett. di pausa → 2° blocco'],
+  ],
+  energyNote: `Stima per un lavoro sedentario: se lavori in piedi o fai un lavoro fisico il mantenimento è più alto e calerai più in fretta. È un punto di partenza, poi decide la bilancia.`,
+};
+
+const START = [
+  ['Settimane 1–2 · Abitudini', `<ul><li>Segui la <b>struttura dei pasti</b> (4 al giorno, proteine a ogni pasto) senza pesare tutto: porzioni a occhio col metodo della mano</li><li><b>Via bibite zuccherate e succhi</b>, alcol solo nel pasto libero</li><li><b>2 allenamenti</b> a settimana (Full A e Full B) e 6.000 passi al giorno</li><li>Lunedì mattina: prima pesata e misura della vita</li></ul>`],
+  ['Il metodo della mano', `<ul><li><b>Proteine:</b> 1 palmo (spessore compreso) a pranzo, 1 palmo e mezzo a cena</li><li><b>Carbo:</b> 1 pugno chiuso di pasta, riso o patate cotti</li><li><b>Grassi:</b> 1 pollice di olio o di frutta secca</li><li><b>Verdure:</b> 2 pugni, anche di più</li></ul>`],
+  ['Settimane 3–4 · Precisione', `Arriva la bilancia da cucina: si pesano carbo, olio e frutta secca (le verdure no). Si passa a <b>3 allenamenti</b> e 7.000 passi.`],
+  ['Dalla 5ª settimana · Piano pieno', `Grammature, 3 allenamenti con tutte le serie, passi in salita fino a 8-10.000. Da qui in poi conta solo la costanza.`],
+];
+
+const DAYS = {
+  on: {
+    label: 'Giorno ON', meta: 'Giorni di allenamento · carbo attorno al workout',
+    kcal: 1960, p: 142, c: 220, g: 50,
+    meals: [
+      { name: 'Colazione', when: 'dolce · 3 minuti', kcal: 420, p: 26, c: 40, g: 16,
+        foods: [['Yogurt greco 0%', '170 g', '1 vasetto'], ["Fiocchi d'avena", '40 g'], ['Frutti di bosco o 1 mela', '100 / 150 g', 'anche surgelati'], ['Noci', '20 g', '~5 gherigli'], ['Caffè', 'libero', 'senza zucchero']],
+        prep: `<b>3 min</b> · Yogurt in ciotola, avena cruda sopra, frutti di bosco (surgelati: 1 min al microonde e fanno il "sugo") e noci spezzate. Cannella a piacere: zero calorie, tanto gusto. Le proteine dal mattino tengono lontana la fame fino a pranzo.`,
+        tips: [
+          ['Al mattino non ho fame', `Va bene anche a metà mattina: lo yogurt si porta in ufficio. Saltarla del tutto no, perché la fame arriva comunque, tutta insieme la sera.`],
+          ['Varianti', `<ul><li><b>avena</b> → 2 fette biscottate integrali o 30 g di corn flakes senza zucchero</li><li><b>yogurt greco</b> → skyr 150 g o fiocchi di latte light 200 g</li><li><b>noci</b> → mandorle 20 g o burro d'arachidi 100% 20 g</li></ul>`],
+        ] },
+      { name: 'Pranzo', when: 'schiscetta o a casa', kcal: 630, p: 50, c: 66, g: 16,
+        foods: [['Pasta o riso', '80 g', 'crudo'], ['Petto di pollo o tacchino', '150 g', 'crudo'], ['Verdure', '≥200 g', 'libere'], ['Olio EVO', '10 g', '1 cucchiaio'], ['Grana', '10 g', '1 cucchiaio']],
+        prep: `<b>Prep la sera prima</b> · Piatto unico: metà verdure, un quarto pollo, un quarto pasta. L'olio si <b>pesa</b> o si misura col cucchiaio: è l'ingrediente che fa saltare i conti, un giro "a occhio" sono facilmente 30 g = 270 kcal.`,
+        tips: [['Al bar o in mensa', `<p>Scegli quello che somiglia di più a questo schema:</p><ul><li><b>Primo semplice</b> (pomodoro, verdure) <i>oppure</i> <b>secondo alla piastra</b> con contorno, senza pane</li><li><b>Insalatona</b> con pollo, tonno o uova + 1 panino piccolo, condimento a parte</li><li>Evita fritti, panati e piatti con panna o formaggi fusi</li></ul>`]] },
+      { name: 'Spuntino', when: 'pre-allenamento · 60–90 min prima', kcal: 320, p: 21, c: 54, g: 2,
+        foods: [['Pane', '50 g', '1 fetta spessa'], ['Bresaola o fesa di tacchino', '50 g'], ['Banana o mela', '1 frutto']],
+        prep: `<b>1 min</b> · Un panino piccolo e un frutto: carbo per avere energia in palestra, proteine magre, pochi grassi così si digerisce in fretta.`,
+        tips: [
+          ['Ti alleni al mattino?', `Sposta questo spuntino un'ora prima della seduta e fai colazione dopo. Le calorie della giornata restano le stesse.`],
+          ['Alternativa dolce', `<b>Yogurt greco 170 g + banana + 2 gallette di riso + 10 g di miele</b> <i>(~300 kcal · P19)</i>.`],
+        ] },
+      { name: 'Cena', when: 'post-allenamento', kcal: 590, p: 45, c: 60, g: 16,
+        foods: [['Pesce bianco, pollo o tacchino', '200 g', 'merluzzo, orata, platessa…'], ['Patate oppure pane', '300 / 90 g'], ['Verdure', '≥250 g'], ['Olio EVO', '15 g']],
+        prep: `<b>10 min</b> · Pesce al forno o in padella antiaderente, patate a cubetti al microonde (8 min) e poi 2 min in padella. Verdure in abbondanza: riempiono il piatto, non le calorie.`,
+        tips: [['Salmone 1–2 volte a settimana', `Al posto del pesce bianco: <b>salmone 150 g, olio ridotto a 5 g</b> <i>(~650 kcal · P39 · G25)</i>. Più calorico, ma grassi buoni e omega-3: va benissimo.`]] },
+    ],
+  },
+  off: {
+    label: 'Giorno OFF', meta: 'Riposo o camminata · meno carbo, stesse proteine',
+    kcal: 1710, p: 139, c: 158, g: 50,
+    meals: [
+      { name: 'Colazione', when: 'dolce o salata, scegli al mattino', kcal: 340, p: 25, c: 27, g: 12, approx: true,
+        variants: [
+          { name: 'Dolce', kcal: 350, p: 24, c: 28, g: 12,
+            foods: [['Yogurt greco 0%', '170 g'], ["Fiocchi d'avena", '30 g'], ['Frutti di bosco', '100 g'], ['Noci', '15 g']],
+            prep: `<b>3 min</b> · Come nei giorni ON, con un po' meno avena e noci: stessa routine, niente da ricordare.` },
+          { name: 'Salata', kcal: 325, p: 27, c: 25, g: 12,
+            foods: [['Uova', '2', 'strapazzate o in camicia'], ['Pane integrale', '50 g', '1 fetta tostata'], ['Fesa di tacchino', '40 g'], ['Pomodorini', '100 g', 'liberi']],
+            prep: `<b>5 min</b> · Uova in padella antiaderente senza olio, pane tostato, tacchino e pomodorini. Sazia a lungo: ottima quando il pranzo arriva tardi.` },
+        ],
+        tips: [['Veloce, 0 minuti', `<b>Fiocchi di latte light 200 g + 2 gallette di riso + 1 frutto</b> <i>(~300 kcal · P25)</i>`]] },
+      { name: 'Pranzo', when: 'schiscetta', kcal: 525, p: 40, c: 60, g: 12,
+        foods: [['Riso, farro o pasta', '70 g', 'crudo'], ['Tonno al naturale', '120 g', 'sgocciolato'], ['Verdure', '≥250 g'], ['Olio EVO', '10 g']],
+        prep: `<b>Prep la sera prima</b> · Insalata fredda: riso o farro, tonno, pomodorini, zucchine grigliate, rucola. Si prepara per 2-3 giorni e si condisce al momento.`,
+        tips: [['Legumi al posto del tonno', `<b>Lenticchie o ceci lessati 200 g</b> e riso a <b>40 g</b> invece di 70 (i legumi hanno già i loro carbo), più <b>1 uovo sodo</b> per tenere su le proteine.`]] },
+      { name: 'Spuntino', when: 'pomeriggio', kcal: 265, p: 20, c: 26, g: 8,
+        foods: [['Yogurt greco 0%', '170 g'], ['Mela o 2 kiwi', '1 porzione'], ['Mandorle', '15 g', '~12 mandorle']],
+        prep: `<b>0 min</b> · Da portare in ufficio. Serve a non arrivare a cena affamato: è quella la fame che fa sbagliare.` },
+      { name: 'Cena', when: 'sera', kcal: 580, p: 54, c: 45, g: 18,
+        foods: [['Pollo, tacchino o manzo magro', '200 g'], ['Patate oppure pane', '200 / 60 g'], ['Verdure', '≥300 g', 'anche minestrone'], ['Olio EVO', '15 g']],
+        prep: `<b>10 min</b> · Carbo ridotti rispetto ai giorni ON, verdure in più: il piatto resta pieno. Un minestrone surgelato (300 g ≈ 90 kcal) è il trucco più semplice per cenare "tanto".`,
+        tips: [['Frittata', `<b>3 uova + 100 g di albumi</b> al posto della carne, con zucchine o spinaci dentro. Olio a 5 g: le uova hanno già i loro grassi.`]] },
+    ],
+  },
+};
+
+const EAT_TIPS = `<p><b>Proteine a ogni pasto:</b> è il nutriente che sazia di più e difende il muscolo mentre il peso scende.</p><p><b>Verdure per prime:</b> inizia pranzo e cena dalle verdure. Volume e fibre, pochissime calorie.</p><p><b>Le calorie liquide non saziano:</b> bibite, succhi, alcol, cappuccini zuccherati. Toglierle è il taglio più facile di tutti. Sì ad acqua, frizzante, tè, tisane, bibite zero.</p><p><b>Pesa olio e frutta secca</b>, non le verdure: 9 kcal per grammo, un errore di 20 g vale 180 kcal.</p><p><b>Mangia lento</b>, almeno 15-20 minuti a pasto: il senso di sazietà arriva in ritardo.</p><p><b>Fame la sera:</b> verdure crude, uno yogurt greco, una tisana. Se succede spesso, sposta 20-30 g di carbo dal pranzo alla cena.</p>`;
+
+const BUILDER = {
+  intro: `Scegli 1 proteina + 1 carbo + 1 grasso + verdure libere. Le porzioni sono equivalenti: ruoti a piacere e i conti tornano. A cena il carbo è patate 300 g (ON) / 200 g (OFF) o pane 90 / 60 g.`,
+  groups: [
+    { title: 'Proteine', head: 'pranzo / cena', items: [['Pollo / tacchino', '150 / 200 g'], ['Pesce bianco', '200 / 250 g'], ['Tonno al naturale', '120 / 150 g'], ['Salmone (olio a 5 g)', '120 / 150 g'], ['Manzo magro / macinato 5%', '130 / 170 g'], ['Uova', '2 / 3 + 100 g albumi'], ['Fiocchi di latte light', '250 / 300 g']] },
+    { title: 'Carbo pranzo', head: 'ON / OFF', items: [['Pasta, riso, farro', '80 / 70 g'], ['Cous cous', '80 / 70 g'], ['Pane', '100 / 90 g'], ['Patate', '350 / 300 g'], ['Gnocchi', '190 / 170 g'], ['Legumi lessati', '300 / 260 g']] },
+    { title: 'Grassi', head: 'scegline 1', items: [['Olio EVO', '10 g'], ['Avocado', '60 g'], ['Frutta secca', '15 g'], ['Grana', '20 g'], ['Verdure', 'libere, ≥200 g']] },
+  ],
+  combos: ['Pasta al pomodoro, tonno e capperi', 'Riso, pollo e zucchine', 'Poke: riso + salmone + avocado (senza olio)', 'Pasta e lenticchie', 'Frittata di zucchine + pane', 'Burger di manzo + patate al forno + insalata'],
+};
+
+const FREE_MEAL = {
+  title: 'Sabato: il pasto libero',
+  text: `Un pasto libero a settimana (pizza, sushi, quello che ti va) al posto della cena prevista. Niente digiuni prima, niente compensazioni dopo: si torna al piano dal pasto successivo. Una pizza e una birra media valgono ~1.200 kcal e la settimana le assorbe senza problemi. A rovinare il deficit non è il pasto libero, è il weekend libero.`,
+};
+
+const WORKOUTS = [
+  { short: 'Full A', title: 'Full Body A', tag: 'Macchine', focus: 'Tutto il corpo · movimenti guidati, si impara la tecnica',
+    note: `Prima: 5 min di cyclette per scaldarti. Dopo, se hai tempo: 10 min di camminata inclinata.`, ex: [
+    ['Leg press', 'quadricipiti e glutei · scendi finché la schiena resta appoggiata', '3×10–12', '2′'],
+    ['Chest press', 'petto · spalle basse e indietro', '3×10–12', '90″'],
+    ['Lat machine', 'dorso · tira coi gomiti, non con le mani', '3×10–12', '90″'],
+    ['Leg curl seduto', 'femorali', '2×12–15', '60″'],
+    ['Alzate laterali manubri', 'spalle · leggero e controllato', '2×12–15', '60″'],
+    ['Plank', 'core · prima sulle ginocchia, poi completo', '3×20–40″', '45″'],
+  ] },
+  { short: 'Full B', title: 'Full Body B', tag: 'Pesi liberi', focus: 'Tutto il corpo · i primi movimenti con i manubri',
+    note: `Prima: 5 min di cyclette per scaldarti. Dopo, se hai tempo: 10 min di camminata inclinata.`, ex: [
+    ['Goblet squat', 'gambe · manubrio al petto, siediti su una panca se serve', '3×10–12', '2′'],
+    ['Pulley', 'dorso · petto in fuori, scapole che si chiudono', '3×10–12', '90″'],
+    ['Panca manubri', 'petto · piana o poco inclinata', '3×10–12', '90″'],
+    ['Ponte glutei / hip thrust', 'glutei · 1″ di pausa in alto', '3×12–15', '75″'],
+    ['Shoulder press macchina', 'spalle', '2×10–12', '90″'],
+    ['Curl manubri + push-down ai cavi', 'braccia · in superserie, uno dopo l\'altro', '2×12–15', '60″'],
+    ['Dead bug', 'core · zona lombare sempre a terra', '2×8 per lato', '45″'],
+  ] },
+  { short: 'Cardio', title: 'Cardio leggero', tag: 'Giorni OFF', focus: 'Zona 2 · respiri forte ma riesci a parlare', cardio: true,
+    note: `I giorni di cardio contano come OFF. Si parte da 20 minuti e si aggiungono 5 minuti a settimana. Per ora niente corsa: con questo peso le ginocchia prendono tanto carico e le gambe non sono ancora pronte. Ci si arriva più avanti, se ti va.`, ex: [
+    ['Camminata a passo svelto', "all'aperto · la base di tutto", '30–45′', '2–3×/sett'],
+    ['Tapis roulant inclinato', 'pendenza 6–10%, 4,5–5,5 km/h · senza aggrapparti', '20→40′', 'alternativa'],
+    ['Cyclette / ellittica', 'zero impatto sulle ginocchia', '20→40′', 'alternativa'],
+    ['Passi giornalieri', 'conta tutto: lavoro, spesa, scale', '6→10k', 'ogni giorno'],
+  ] },
+];
+
+const PHASES = [ // fase, settimane, schema, nota
+  ['Fase 1 · Riattivazione', 'settimane 1–4', '2 serie · RIR 3', `Si impara a fare gli esercizi. Nelle prime 2 settimane bastano <b>2 allenamenti</b> (A e B), dalla 3ª si passa a 3. Ogni serie finisce con 3 ripetizioni "in tasca": deve sembrare quasi troppo facile, ed è voluto. Tendini e articolazioni si adattano più lentamente dei muscoli.`],
+  ['Fase 2 · Costruzione', 'settimane 5–10', '3 serie · RIR 2', `Tutte le serie da programma, carichi che salgono con la doppia progressione. In questa fase si migliora quasi a ogni seduta: è normale ed è il bello di ripartire.`],
+  ['Fase 3 · Spinta', 'settimane 11–16', '3–4 serie · RIR 1–2', `+1 serie al primo esercizio di ogni seduta. Se la tecnica è pulita, il goblet squat può diventare squat al multipower, ed entra lo <b>stacco rumeno con manubri</b> nella Full B (3×10, dopo il goblet).`],
+];
+
+const PROGRESSION = [
+  ["Cos'è il RIR", `Ripetizioni In Riserva: quante ne potresti fare ancora prima di non farcela. RIR 3 = ti fermi quando ne avresti ancora 3. Per migliorare non serve arrivare allo sfinimento, soprattutto all'inizio.`],
+  ['Come progredire', `Doppia progressione: quando chiudi tutte le serie in cima al range (es. 3×12) con il RIR giusto, la volta dopo aumenti il carico del minimo possibile e riparti dal fondo (3×10). Segna tutto su un quaderno o un'app.`],
+  ['Riscaldamento', `5 minuti di cyclette o camminata, poi una serie leggera da 12-15 del primo esercizio. Basta così.`],
+  ['Dolori dopo i primi allenamenti', `Nei primi 10 giorni i muscoli faranno male 1-2 giorni dopo la seduta (DOMS): è normale e passa in fretta. Un dolore alle articolazioni o acuto invece no: quell'esercizio si cambia (vedi Piano B).`],
+];
+
+const PHILOSOPHY = `<p>Tre full body a settimana: ogni muscolo lavora 3 volte, con poche serie per volta. Per chi riparte è lo schema che fa progredire più in fretta con meno fatica, e se salti una seduta non resta scoperto niente.</p><p><b>Prima le macchine, poi i pesi liberi:</b> la Full A è tutta guidata per imparare a spingere e tirare in sicurezza, la Full B introduce i manubri. Si alternano: settimana 1 A-B-A, settimana 2 B-A-B.</p><p>A far scendere il peso sono la dieta e i passi. <b>I pesi servono a tenere (e costruire) muscolo</b> mentre il peso cala: così quello che perdi è grasso, e non ti "sgonfi".</p>`;
+
+const PLAN_B = {
+  intro: `Postazione occupata? Non aspettare: sostituisci con un movimento simile. I manubri sono il jolly, ci sono sempre.`,
+  items: [
+    ['Leg press occupata', ['Hack squat', 'Goblet squat', 'Affondi indietro (corpo libero o manubri)']],
+    ['Chest press occupata', ['Panca manubri', 'Piegamenti con le mani su una panca', 'Croci ai cavi']],
+    ['Lat machine presa', ['Trazioni assistite (macchina)', 'Pulldown a un braccio ai cavi', 'Rematore manubrio']],
+    ['Ginocchia sensibili', ['Leg press con meno profondità', 'Box squat su una panca alta', 'Ponte glutei e leg curl']],
+    ['Solo 30 minuti', ['I primi 3 esercizi della scheda', '2 serie ciascuno', 'Il resto si salta: va benissimo']],
+  ],
+  rule: `Mai saltare la seduta per mancanza di tempo o di macchine: <b>un allenamento corto vale molto più di uno saltato</b>.`,
+};
+
+const WEEK = {
+  intro: `Tra un allenamento e l'altro c'è sempre almeno un giorno di stacco, e lo si usa per camminare.`,
+  options: [
+    { name: 'Opzione A', days: [['Lun', 'Full A', 'on'], ['Mar', 'Camminata 30′', 'off'], ['Mer', 'Full B', 'on'], ['Gio', 'Riposo · passi', 'off'], ['Ven', 'Full A', 'on'], ['Sab', 'Camminata lunga · pasto libero', 'off'], ['Dom', 'Riposo', 'off']] },
+    { name: 'Opzione B', days: [['Lun', 'Riposo · passi', 'off'], ['Mar', 'Full A', 'on'], ['Mer', 'Camminata 30′', 'off'], ['Gio', 'Full B', 'on'], ['Ven', 'Riposo · passi', 'off'], ['Sab', 'Full A · pasto libero', 'on'], ['Dom', 'Camminata lunga', 'off']] },
+  ],
+  note: `A e B si alternano: settimana 1 A-B-A, settimana 2 B-A-B. Nelle settimane 1–2 fai solo i primi due allenamenti. Il pasto libero prende il posto della cena prevista.`,
+};
+
+const RULES = [
+  ['Costanza prima di tutto', `3 allenamenti normali per 16 settimane battono 6 allenamenti eroici per 3 settimane. Se una settimana va storta, la successiva si riparte dal piano, senza recuperi e senza punizioni.`],
+  ["I passi sono l'arma segreta", `Camminare consuma più di quanto sembri e non fa venire fame. Parti dalla tua media attuale (la vedi sul telefono) e aggiungi ~1.000 passi a settimana fino a 8-10.000.`],
+  ['Proteine a ogni pasto', `Circa 140 g al giorno. Saziano, proteggono il muscolo e per digerirle il corpo spende più energia. Se un pasto salta, recupera la proteina, non i carbo.`],
+  ['Tecnica prima del carico', `Ogni ripetizione controllata, 2 secondi in discesa. Il carico sale quando il movimento è pulito, non prima.`],
+  ['Sonno 7-8 ore', `Chi dorme poco ha più fame (soprattutto di dolci) e recupera peggio. Fa parte del piano, non è un extra.`],
+  ['Pesati e misurati bene', `Bilancia 3-4 mattine a settimana, a digiuno e dopo il bagno: conta la <b>media settimanale</b>, perché il peso del singolo giorno oscilla di ±1 kg tra acqua e sale. Il lunedì misura la vita all'altezza dell'ombelico.`],
+  ['Natale = mantenimento', `Settimana 6 (21-27 dicembre): allenamenti leggeri, dieta a mantenimento e pranzi delle feste senza sensi di colpa. L'obiettivo è non riprendere, non dimagrire. Capodanno vale come pasto libero.`],
+  ['Prima di partire: un check dal medico', `Una vita di 111 cm è sopra la soglia oltre la quale salgono i rischi per pressione, glicemia e colesterolo (102 cm per gli uomini). Nessun allarme, ma un controllo e degli esami del sangue all'inizio sono un'ottima base, e tra 4 mesi saranno anche la prova dei progressi.`],
+];
+
+const LEVER = `Pesati 3–4 mattine a settimana e guarda la <b>media settimanale</b>. Scendi di 0,4–0,7 kg/sett → non toccare nulla. Fermo per 2 settimane (e anche la vita non cala) → togli ~150 kcal dai giorni OFF (es. −10 g di olio e −20 g di carbo a cena) <b>oppure</b> aggiungi 2.000 passi al giorno. Scendi più di 1 kg/sett dopo le prime 2 settimane → aggiungi ~150 kcal (un frutto e 15 g di frutta secca). Fame continua, stanchezza, allenamenti che peggiorano → 1 settimana a mantenimento (~2.300 kcal) e poi si riparte. <b>Le proteine non si toccano mai.</b>`;
+
+const STRATEGY = [
+  ['Deficit moderato, non fame', `~500 kcal sotto il mantenimento: si perde circa mezzo chilo a settimana senza togliere energia agli allenamenti. I tagli aggressivi funzionano per 3 settimane, poi arriva la fame e si molla tutto.`],
+  ['Carb cycling leggero', `Più carbo nei giorni di allenamento (energia in palestra), meno nei giorni di riposo con più verdure. Le proteine restano uguali. Conta la media della settimana: ~1.820 kcal.`],
+  ['Proteine ~1,7 g/kg', `~140 g al giorno. Sembrano tante, ma sono il motivo per cui questa dieta sazia. Su ~56 kg di massa magra stimata vuol dire circa 2,5 g per kg di muscolo: la quantità che lo protegge mentre si dimagrisce.`],
+  ['Prime 2 settimane: bilancia felice', `Il primo calo sarà veloce (1,5-2 kg): è soprattutto acqua e glicogeno, non grasso. Poi il ritmo si assesta intorno al mezzo chilo a settimana, ed è quello vero. Non scoraggiarti quando rallenta.`],
+  ['Il metro conta più della bilancia', `Con i pesi si costruisce un po' di muscolo mentre si perde grasso: può capitare che la bilancia si fermi e la vita scenda. Quella è una settimana vinta. Foto di fronte e di lato ogni 4 settimane, stessa luce, stessa ora.`],
+  ['Dopo marzo', `A ~78 kg si fanno 2 settimane a mantenimento (pausa dalla dieta, ~2.200 kcal) e poi un secondo blocco. Il traguardo di salute è una vita sotto la metà dell'altezza (~83 cm): servono più blocchi, ed è giusto così.`],
+  ['Batch cooking la domenica', `1 kg di pollo al forno, un pentolone di riso o farro, verdure grigliate in teglia: 4-5 pasti pronti. A dieta si sbaglia quando si ha fame e il frigo è vuoto.`],
+];
+
+const SHOP = {
+  where: 'Lidl', total: '~50–60 € / settimana',
+  items: [
+    ['Carne', '~15 €', 'Petto di pollo / tacchino 1,2 kg · manzo magro o macinato 5% 0,4 kg · bresaola o fesa di tacchino 2 conf.'],
+    ['Pesce', '~10 €', 'Merluzzo o platessa surgelati 0,6 kg · tonno al naturale (multipack) · salmone 1-2 porzioni'],
+    ['Uova & latticini', '~10 €', 'Uova (10) · albumi in brick · yogurt greco 0% ×10 · grana'],
+    ['Carbo', '~6 €', "Fiocchi d'avena 0,5 kg · pasta 0,5 kg · riso o farro 0,5 kg · pane integrale · patate 2 kg · gallette di riso"],
+    ['Frutta & verdura', '~12 €', 'Frutti di bosco surgelati 1 kg · mele e banane ×8 · kiwi · minestrone e verdure surgelate · insalata, zucchine, pomodorini'],
+    ['Dispensa', '~4 €', 'Olio EVO · noci e mandorle · spezie, cannella, aceto balsamico · caffè'],
+  ],
+  supplements: `<b>Per dimagrire non servono integratori:</b> bruciagrassi, drenanti e "detox" sono marketing. Due eccezioni utili: la <b>whey</b> (uno shaker da 30 g al posto dello yogurt, se fai fatica ad arrivare alle proteine) e la <b>vitamina D</b> d'inverno, ma solo dopo averne parlato col medico.`,
+};
+
+const MACRO_NOTE = `Proteine ~1,7 g/kg (circa 140 g), grassi ~0,6 g/kg (50 g, ~25% delle calorie), carbo a completare: più alti nei giorni di allenamento, più bassi nei giorni OFF. Media settimanale con 3 ON + 4 OFF ≈ 1.820 kcal. Colazione OFF: media tra dolce e salata, che si equivalgono.`;
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+
+const $ = s => document.querySelector(s);
+const fmt = (n, d = 0) => n.toLocaleString('it-IT', { minimumFractionDigits: d, maximumFractionDigits: d, useGrouping: 'always' });
+const store = {
+  get(k, d) { try { return localStorage.getItem('rp.' + k) ?? d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem('rp.' + k, v); } catch {} },
+};
+const toDate = s => new Date(s + 'T00:00:00');
+const daysBetween = (a, b) => Math.round((b - a) / 864e5); // arrotonda per l'ora legale
+const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+
+function seg(id, labels, active, cls = '') {
+  return `<div class="seg ${cls}" id="${id}" style="--n:${labels.length};--i:${active}">${labels.map((l, i) => `<button data-i="${i}" class="${i == active ? 'on' : ''}">${l}</button>`).join('')}</div>`;
+}
+function bindSeg(id, onChange) {
+  const el = document.getElementById(id);
+  el.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    el.style.setProperty('--i', b.dataset.i);
+    el.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+    onChange(+b.dataset.i);
+  });
+}
+const disclosure = (title, body, open = false) => `<details${open ? ' open' : ''}><summary>${title}</summary><div class="dbody">${body}</div></details>`;
+const foodRows = foods => foods.map(([n, q, note]) => `<div class="row food"><span class="n">${n}${note ? ` <small>· ${note}</small>` : ''}</span><span class="q">${q}</span></div>`).join('');
+
+/* ---------- Piano ---------- */
+function renderPiano() {
+  const start = toDate(BLOCK.start), now = new Date();
+  const day = daysBetween(start, new Date(now.getFullYear(), now.getMonth(), now.getDate()));
+  const week = Math.min(BLOCK.weeks, Math.max(1, Math.floor(day / 7) + 1));
+  const done = day >= BLOCK.weeks * 7, before = day < 0;
+
+  const pts = BLOCK.route.map(([d, kg, l]) => ({ t: daysBetween(start, toDate(d)), kg, l }));
+  const ks = pts.map(p => p.kg), hi = Math.max(...ks), lo = Math.min(...ks), pad = (hi - lo) * .12;
+  const goal = pts.at(-1).kg, T = pts.at(-1).t, W = 320, H = 110, x = t => 6 + (t / T) * (W - 12), y = kg => 10 + (hi + pad - kg) / (hi - lo + 2 * pad) * (H - 34);
+  const t = Math.max(0, Math.min(T, day));
+  let i = pts.findIndex(p => p.t >= t); if (i <= 0) i = 1;
+  const a = pts[i - 1], b = pts[i], kgNow = a.kg + (b.kg - a.kg) * ((t - a.t) / (b.t - a.t || 1));
+  const line = pts.map(p => `${x(p.t).toFixed(1)},${y(p.kg).toFixed(1)}`).join(' ');
+  const past = pts.filter(p => p.t <= t).map(p => `${x(p.t).toFixed(1)},${y(p.kg).toFixed(1)}`).concat(`${x(t).toFixed(1)},${y(kgNow).toFixed(1)}`).join(' ');
+  const nextDeload = BLOCK.deloads.find(w => w >= week);
+  const deloadStart = nextDeload && addDays(start, (nextDeload - 1) * 7);
+  const isDeload = BLOCK.deloads.includes(week) && !done && !before;
+  const cap = s => s[0].toUpperCase() + s.slice(1);
+
+  $('#v-piano').innerHTML = `
+    <div class="card">
+      <div class="pad">
+        <div class="kicker">${done ? 'Blocco concluso' : before ? `Si parte ${start.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' })}` : isDeload ? cap(BLOCK.deloadLabel) : BLOCK.kicker}</div>
+        <div class="hero-top">
+          ${before ? `<div class="big">${-day}<small> ${day === -1 ? 'giorno' : 'giorni'} al via</small></div>` : `<div class="big">Sett. ${week}<small> / ${BLOCK.weeks}</small></div>`}
+          <div style="text-align:right"><div class="kicker" style="margin:0">${before ? 'si parte da' : 'rotta di oggi'}</div><div class="big" style="font-size:28px">${before ? '' : '~'}${fmt(kgNow, kgNow % 1 ? 1 : 0)}<small style="font-size:15px"> kg</small></div></div>
+        </div>
+        <svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Rotta del peso da ${fmt(pts[0].kg)} a ${fmt(goal)} kg">
+          <line x1="6" x2="${W - 6}" y1="${y(goal)}" y2="${y(goal)}" stroke="var(--sep)" stroke-dasharray="3 4"/>
+          <polyline points="${line}" fill="none" stroke="var(--label3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="${past}" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          ${pts.map(p => `<circle cx="${x(p.t)}" cy="${y(p.kg)}" r="2.5" fill="${p.t <= t ? 'var(--accent)' : 'var(--label3)'}"/>`).join('')}
+          <circle cx="${x(t)}" cy="${y(kgNow)}" r="6" fill="var(--accent)" stroke="var(--card)" stroke-width="2.5"/>
+          ${pts.map(p => `<text x="${x(p.t)}" y="${H - 4}" text-anchor="middle">${p.l}</text>`).join('')}
+          ${pts.filter((p, k) => k === 0 || k === pts.length - 1).map(p => `<text x="${x(p.t)}" y="${y(p.kg) - 9}" text-anchor="${p.t ? 'end' : 'start'}" style="fill:var(--label)">${fmt(p.kg, p.kg % 1 ? 1 : 0)}</text>`).join('')}
+        </svg>
+      </div>
+      <div class="chips">${BLOCK.stats.map(([l, v]) => `<div><span>${l}</span><b>${v}</b></div>`).join('')}</div>
+    </div>
+    ${nextDeload && !done ? `<div class="card"><div class="row"><span>${isDeload ? `${cap(BLOCK.deloadLabel)} in corso` : `Prossima ${BLOCK.deloadLabel}`}<span class="sub">${BLOCK.deloadText}</span></span><span class="r">${isDeload ? `sett. ${week}` : `sett. ${nextDeload} · ${deloadStart.toLocaleDateString('it-IT', { day: 'numeric', month: 'short' })}`}</span></div></div>` : ''}
+
+    <h2>Come partire</h2>
+    <div class="card">${START.map(([t, b], k) => disclosure(t, b, k === 0 && (before || week <= 2))).join('')}</div>
+
+    <h2>Misure</h2>
+    <div class="card">${BLOCK.measures.map(([n, sub, now, goal]) => `<div class="row"><span>${n}${sub ? `<span class="sub">${sub}</span>` : ''}</span><span class="r"><b>${now}</b><span class="sub">${goal}</span></span></div>`).join('')}</div>
+    <p class="foot">Rimisura tutto ogni lunedì mattina, a digiuno. La vita col metro all'altezza dell'ombelico, pancia rilassata, senza stringere.</p>
+
+    <h2>Energia</h2>
+    <div class="card">${BLOCK.energy.map(([l, v]) => `<div class="row"><span>${l}</span><span class="r mut">${v}</span></div>`).join('')}</div>
+    <p class="foot">${BLOCK.energyNote}</p>
+    <div class="note"><h4>La leva: come regolare</h4>${LEVER}</div>
+
+    <h2>Settimana tipo</h2>
+    <div style="margin-bottom:10px">${seg('seg-week', WEEK.options.map(o => o.name), store.get('cal', 0))}</div>
+    <div class="card" id="week-list"></div>
+    <p class="foot">${WEEK.intro} ${WEEK.note}</p>
+
+    <h2>Regole fondamentali</h2>
+    <div class="card">${RULES.map(([t, b]) => disclosure(t, b)).join('')}</div>
+
+    <h2>Note strategiche</h2>
+    <div class="card">${STRATEGY.map(([t, b]) => disclosure(t, b)).join('')}</div>`;
+
+  const renderWeek = k => {
+    $('#week-list').innerHTML = WEEK.options[k].days.map(([d, w, s]) =>
+      `<div class="row wk ${s === 'off' ? 'rest' : ''}"><span class="d">${d}</span><span class="w">${w}</span><span class="pill ${s}">${s === 'opt' ? 'OFF/ON' : s.toUpperCase()}</span></div>`).join('');
+  };
+  renderWeek(+store.get('cal', 0));
+  bindSeg('seg-week', k => { store.set('cal', k); renderWeek(k); });
+}
+
+/* ---------- Dieta ---------- */
+function macroLine({ p, c, g }) {
+  const tot = p * 4 + c * 4 + g * 9;
+  return `<div class="mline"><span><span class="dot" style="background:var(--p)"></span><b>${p}</b> P</span><span><span class="dot" style="background:var(--c)"></span><b>${c}</b> C</span><span><span class="dot" style="background:var(--g)"></span><b>${g}</b> G</span>
+    <span class="split"><div style="width:${p * 4 / tot * 100}%;background:var(--p)"></div><div style="width:${c * 4 / tot * 100}%;background:var(--c)"></div><div style="width:${g * 9 / tot * 100}%;background:var(--g)"></div></span></div>`;
+}
+function mealCard(m, key) {
+  const approx = m.approx ? '~' : '';
+  let body;
+  if (m.variants) {
+    const vi = +store.get('bf', 0);
+    body = `<div class="inner-seg">${seg('seg-' + key, m.variants.map(v => v.name), vi, 'sm')}</div><div id="var-${key}"></div>`;
+  } else {
+    body = foodRows(m.foods) + disclosure('Preparazione', m.prep);
+  }
+  const tips = (m.tips || []).map(([t, b]) => disclosure(t, b)).join('');
+  return `<div class="card">
+    <div class="meal-h"><div><h3>${m.name}</h3><div class="sub">${m.when}</div></div><div class="kcal">${approx}${fmt(m.kcal)}<small> kcal</small></div></div>
+    ${macroLine(m)}
+    ${body}${tips}
+  </div>`;
+}
+function renderVariant(m, key, vi) {
+  const v = m.variants[vi];
+  document.getElementById('var-' + key).innerHTML = `<div class="row" style="min-height:0;padding:2px 16px 6px"><span class="vmeta" style="margin:0;text-align:left">${v.name}: ${v.kcal} kcal · P${v.p} · C${v.c} · G${v.g}</span></div>` + foodRows(v.foods) + disclosure('Preparazione', v.prep);
+}
+function renderDieta() {
+  const k = +store.get('day', 0);
+  $('#v-dieta').innerHTML = `
+    <div class="sticky">${seg('seg-day', [DAYS.on.label, DAYS.off.label], k)}</div>
+    <div id="day-body"></div>
+
+    <h2>Costruisci il piatto</h2>
+    <p class="foot" style="margin:-4px 4px 10px">${BUILDER.intro}</p>
+    ${BUILDER.groups.map(g => `<div class="card"><div class="row"><b>${g.title}</b><span class="r mut" style="font-size:13px">${g.head}</span></div>${g.items.map(([n, q]) => `<div class="row food"><span>${n}</span><span class="q">${q}</span></div>`).join('')}</div>`).join('')}
+    <div class="card">${disclosure('Combo già pronte', `<ul>${BUILDER.combos.map(c => `<li>${c}</li>`).join('')}</ul>`)}</div>
+
+    <h2>Consigli</h2>
+    <div class="card">
+      ${disclosure('Mangiare meno senza fare la fame', EAT_TIPS)}
+      ${disclosure(FREE_MEAL.title, `<p>${FREE_MEAL.text}</p>`)}
+    </div>`;
+
+  const renderDay = i => {
+    const key = i ? 'off' : 'on', d = DAYS[key];
+    const max = Math.max(d.p * 4, d.c * 4, d.g * 9);
+    $('#day-body').innerHTML = `
+      <div class="card pad tone-${key}">
+        <div class="kicker">${d.meta}</div>
+        <div class="day-sum">
+          <div class="big">${fmt(d.kcal)}<small> kcal</small></div>
+          <div class="macros">
+            ${[['P', d.p, 4, 'p'], ['C', d.c, 4, 'c'], ['G', d.g, 9, 'g']].map(([l, v, f, c]) => `<div class="mrow" style="--m:var(--${c})"><i>${l}</i><div class="track"><div style="width:${v * f / max * 100}%"></div></div><span>${v} g</span></div>`).join('')}
+          </div>
+        </div>
+      </div>
+      <h2>Pasti</h2>
+      ${d.meals.map((m, j) => mealCard(m, key + j)).join('')}`;
+    d.meals.forEach((m, j) => {
+      if (!m.variants) return;
+      const id = key + j;
+      renderVariant(m, id, +store.get('bf', 0));
+      bindSeg('seg-' + id, vi => { store.set('bf', vi); renderVariant(m, id, vi); });
+    });
+  };
+  renderDay(k);
+  bindSeg('seg-day', i => { store.set('day', i); renderDay(i); });
+}
+
+/* ---------- Allenamento ---------- */
+function renderAllenamento() {
+  const k = Math.min(WORKOUTS.length - 1, +store.get('wo', 0));
+  $('#v-allenamento').innerHTML = `
+    <div class="sticky">${seg('seg-wo', WORKOUTS.map(w => w.short), k, 'sm')}</div>
+    <div id="wo-body"></div>
+
+    <h2>Le fasi</h2>
+    <div class="card">${PHASES.map(([n, wk, s, note]) => `<details class="lift"><summary><span>${n}<span class="sub">${wk}</span></span><span class="r goal">${s}</span></summary><div class="dbody">${note}</div></details>`).join('')}</div>
+    <p class="foot">Il primo giorno serve a trovare i carichi: scegli un peso con cui faresti 15 ripetizioni pulite e fanne 10-12. Se era troppo leggero, sali la volta dopo.</p>
+
+    <h2>Progressione</h2>
+    <div class="card">
+      ${PROGRESSION.map(([t, b]) => disclosure(t, b)).join('')}
+      ${disclosure('Perché questo programma', PHILOSOPHY)}
+    </div>
+
+    <h2>Palestra piena? Piano B</h2>
+    <p class="foot" style="margin:-4px 4px 10px">${PLAN_B.intro}</p>
+    <div class="card">${PLAN_B.items.map(([t, alts]) => disclosure(t, `<ul>${alts.map(a => `<li>${a}</li>`).join('')}</ul>`)).join('')}</div>
+    <p class="foot">${PLAN_B.rule}</p>`;
+
+  const renderWo = i => {
+    const w = WORKOUTS[i];
+    $('#wo-body').innerHTML = `<div class="card">
+      <div class="wo-h"><span class="tag">${w.tag}</span><h3>${w.title}</h3><p>${w.focus}</p></div>
+      ${w.ex.map(([n, aim, sets, rest], j) => `<div class="row ex"><span class="i">${j + 1}</span><span class="n">${n}<span class="sub">${aim}</span></span><span class="r"><b>${sets}</b><span>${w.cardio ? rest : `rec ${rest}`}</span></span></div>`).join('')}
+    </div>${w.note ? `<p class="foot">${w.note}</p>` : ''}`;
+  };
+  renderWo(k);
+  bindSeg('seg-wo', i => { store.set('wo', i); renderWo(i); });
+}
+
+/* ---------- Spesa ---------- */
+function renderSpesa() {
+  const rows = DAYS.on.meals.map((m, i) => {
+    const o = DAYS.off.meals[i];
+    const name = m.name === o.name ? m.name : `${m.name} / ${o.name}`;
+    return `<tr><td>${name}</td><td class="c-on">${fmt(m.kcal)}</td><td class="c-off">${fmt(o.kcal)}</td></tr>`;
+  }).join('');
+  const macro = d => `P ${d.p} · C ${d.c} · G ${d.g}`;
+  $('#v-spesa').innerHTML = `
+    <div class="card">
+      <div class="row"><span>Spesa settimanale<span class="sub">${SHOP.where}</span></span><span class="r" style="font-weight:600">${SHOP.total}</span></div>
+    </div>
+    <div class="card">${SHOP.items.map(([c, e, items]) => `<div class="row stack"><div style="display:flex;justify-content:space-between"><b>${c}</b><span class="mut num">${e}</span></div><p>${items}</p></div>`).join('')}</div>
+    <div class="note"><h4>Integratori</h4>${SHOP.supplements}</div>
+
+    <h2>Riepilogo kcal</h2>
+    <div class="card">
+      <table>
+        <thead><tr><th>Pasto</th><th class="c-on">ON</th><th class="c-off">OFF</th></tr></thead>
+        <tbody>${rows}</tbody>
+        <tfoot><tr><td>Totale</td><td class="c-on">${fmt(DAYS.on.kcal)}</td><td class="c-off">${fmt(DAYS.off.kcal)}</td></tr></tfoot>
+      </table>
+    </div>
+    <div class="card">
+      <div class="row"><span>Macro ON</span><span class="r mut">${macro(DAYS.on)}</span></div>
+      <div class="row"><span>Macro OFF</span><span class="r mut">${macro(DAYS.off)}</span></div>
+    </div>
+    <p class="foot">${MACRO_NOTE}</p>`;
+}
+
+/* ---------- Tab ---------- */
+const TITLES = { piano: 'Piano', dieta: 'Dieta', allenamento: 'Allenamento', spesa: 'Spesa' };
+function go(tab, scroll = true) {
+  document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'v-' + tab));
+  document.querySelectorAll('.tabbar button').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
+  $('#title').textContent = TITLES[tab];
+  store.set('tab', tab);
+  if (scroll) window.scrollTo(0, 0);
+}
+$('#tabbar').addEventListener('click', e => { const b = e.target.closest('button'); if (b) go(b.dataset.tab); });
+
+renderPiano(); renderDieta(); renderAllenamento(); renderSpesa();
+const saved = store.get('tab', 'piano');
+go(TITLES[saved] ? saved : 'piano', false);
+</script>
+</body>
+</html>
