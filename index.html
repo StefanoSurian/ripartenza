@@ -174,6 +174,24 @@
   .tabbar svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
   .tabbar button.on{color:var(--accent);background:var(--fill);}
 
+  /* lista spesa */
+  #shop-list .card:first-child{margin-top:12px;}
+  .chk{cursor:pointer;user-select:none;-webkit-user-select:none;}
+  .chk .box{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--label3);display:grid;place-items:center;transition:background .15s,border-color .15s;}
+  .chk.done .box{background:var(--on);border-color:var(--on);}
+  .chk.done .box::after{content:'';width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:translateY(-1px) rotate(45deg);}
+  .chk .n{flex:1;min-width:0;}
+  .chk.done .n{color:var(--label3);text-decoration:line-through;}
+  .chk .q{font-variant-numeric:tabular-nums;color:var(--label2);white-space:nowrap;font-size:14px;}
+  .chk.done .q{color:var(--label3);}
+  .chk .del{flex:none;border:0;background:var(--fill);color:var(--label2);width:26px;height:26px;border-radius:50%;font:inherit;font-size:17px;line-height:1;cursor:pointer;}
+  .pbar{height:6px;margin:0 16px;border-radius:3px;background:var(--fill);overflow:hidden;}
+  .pbar div{height:100%;background:var(--on);border-radius:3px;transition:width .25s;}
+  .btn:disabled{opacity:.4;cursor:default;}
+  .add-row{display:flex;gap:8px;align-items:center;padding:8px 8px 8px 16px;}
+  .add-row input{flex:1;min-width:0;border:0;background:none;font:inherit;font-size:16px;color:var(--label);outline:none;}
+  .add-row input::placeholder{color:var(--label3);}
+
   /* ricette */
   #rand{margin-bottom:12px;}
   .rand-idle{display:flex;align-items:center;justify-content:space-between;gap:12px;}
@@ -417,13 +435,14 @@ const STRATEGY = [
 
 const SHOP = {
   where: 'Lidl', total: '~50–60 € / settimana',
-  items: [
-    ['Carne', '~15 €', 'Petto di pollo / tacchino 1,2 kg · manzo magro o macinato 5% 0,4 kg · bresaola o fesa di tacchino 2 conf.'],
-    ['Pesce', '~10 €', 'Merluzzo o platessa surgelati 0,6 kg · tonno al naturale (multipack) · salmone 1-2 porzioni'],
-    ['Uova & latticini', '~10 €', 'Uova (10) · albumi in brick · yogurt greco 0% ×10 · grana'],
-    ['Carbo', '~6 €', "Fiocchi d'avena 0,5 kg · pasta 0,5 kg · riso o farro 0,5 kg · pane integrale · patate 2 kg · gallette di riso"],
-    ['Frutta & verdura', '~12 €', 'Frutti di bosco surgelati 1 kg · mele e banane ×8 · kiwi · minestrone e verdure surgelate · insalata, zucchine, pomodorini'],
-    ['Dispensa', '~4 €', 'Olio EVO · noci e mandorle · spezie, cannella, aceto balsamico · caffè'],
+  items: [ // reparto, costo, prodotti [nome, quantità]
+    ['Carne', '~15 €', [['Petto di pollo / tacchino', '1,2 kg'], ['Manzo magro o macinato 5%', '0,4 kg'], ['Bresaola o fesa di tacchino', '2 conf.']]],
+    ['Pesce', '~10 €', [['Merluzzo o platessa surgelati', '0,6 kg'], ['Tonno al naturale', 'multipack'], ['Salmone', '1–2 porzioni']]],
+    ['Uova & latticini', '~10 €', [['Uova', '10'], ['Albumi in brick', '1'], ['Yogurt greco 0%', '×10'], ['Grana', '1 pezzo']]],
+    ['Carbo', '~6 €', [["Fiocchi d'avena", '0,5 kg'], ['Pasta', '0,5 kg'], ['Riso o farro', '0,5 kg'], ['Pane integrale', '1'], ['Patate', '2 kg'], ['Gallette di riso', '1 conf.']]],
+    ['Frutta & verdura', '~12 €', [['Frutti di bosco surgelati', '1 kg'], ['Mele e banane', '×8'], ['Kiwi', '×4'], ['Minestrone e verdure surgelate', '2–3 buste'], ['Insalata, zucchine, pomodorini', 'per la sett.']]],
+    ['Dispensa', '~4 €', [['Olio EVO', 'se finito'], ['Noci e mandorle', '1 busta'], ['Spezie, cannella, aceto balsamico', 'se finiti'], ['Caffè', 'se finito']]],
+    ['Per le ricette', 'se le fai', [['Passata di pomodoro', '1–2 bott.'], ['Lenticchie lessate', '1 barattolo'], ['Capperi', '1 vasetto'], ['Salsa di soia', '1 bott.'], ['Senape', '1 tubetto'], ['Limoni', '×2']]],
   ],
   supplements: `<b>Per dimagrire non servono integratori:</b> bruciagrassi, drenanti e "detox" sono marketing. Due eccezioni utili: la <b>whey</b> (uno shaker da 30 g al posto dello yogurt, se fai fatica ad arrivare alle proteine) e la <b>vitamina D</b> d'inverno, ma solo dopo averne parlato col medico.`,
 };
@@ -804,10 +823,10 @@ function renderSpesa() {
   }).join('');
   const macro = d => `P ${d.p} · C ${d.c} · G ${d.g}`;
   $('#v-spesa').innerHTML = `
-    <div class="card">
-      <div class="row"><span>Spesa settimanale<span class="sub">${SHOP.where}</span></span><span class="r" style="font-weight:600">${SHOP.total}</span></div>
-    </div>
-    <div class="card">${SHOP.items.map(([c, e, items]) => `<div class="row stack"><div style="display:flex;justify-content:space-between"><b>${c}</b><span class="mut num">${e}</span></div><p>${items}</p></div>`).join('')}</div>
+    <div class="card" id="shop-head"></div>
+    <div id="shop-list"></div>
+    <div class="card" style="margin-top:12px"><form class="add-row" id="shop-add"><input id="shop-in" placeholder="Aggiungi qualcos'altro…" autocomplete="off" enterkeyhint="done" maxlength="60"><button class="btn" type="submit">Aggiungi</button></form></div>
+    <p class="foot">Tocca un prodotto per spuntarlo. Le spunte restano salvate sul telefono finché non premi <b>Nuova spesa</b>.</p>
     <div class="note"><h4>Integratori</h4>${SHOP.supplements}</div>
 
     <h2>Riepilogo kcal</h2>
@@ -823,6 +842,41 @@ function renderSpesa() {
       <div class="row"><span>Macro OFF</span><span class="r mut">${macro(DAYS.off)}</span></div>
     </div>
     <p class="foot">${MACRO_NOTE}</p>`;
+
+  // lista della spesa: spunte e prodotti aggiunti salvati sul telefono
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const load = (k, d) => { try { return JSON.parse(store.get(k, '')) || d; } catch { return d; } };
+  const done = new Set(load('shop', []));
+  let extra = load('shopx', []);
+  const save = () => { store.set('shop', JSON.stringify([...done])); store.set('shopx', JSON.stringify(extra)); };
+  const key = (c, n) => c + '|' + n;
+  const groups = () => SHOP.items.concat(extra.length ? [['Altro', '', extra.map(n => [n, ''])]] : []);
+  const draw = () => {
+    const gs = groups(), all = gs.flatMap(([c, , list]) => list.map(([n]) => key(c, n)));
+    const n = all.filter(k => done.has(k)).length;
+    $('#shop-head').innerHTML = `
+      <div class="row"><span>Spesa settimanale<span class="sub">${SHOP.where} · ${SHOP.total}</span></span><span class="r"><b>${n} / ${all.length}</b><span class="sub">${n && n === all.length ? 'tutto preso!' : 'presi'}</span></span></div>
+      <div class="pbar"><div style="width:${all.length ? n / all.length * 100 : 0}%"></div></div>
+      <div class="btns" style="padding-top:12px"><button class="btn sec" id="shop-reset"${n ? '' : ' disabled'}>Nuova spesa</button></div>`;
+    $('#shop-list').innerHTML = gs.map(([c, e, list]) => `<div class="card">
+      <div class="row"><b>${c}</b><span class="r mut" style="font-size:13px">${e}</span></div>
+      ${list.map(([nm, q]) => { const k = key(c, nm); return `<div class="row chk${done.has(k) ? ' done' : ''}" data-k="${esc(k)}"><span class="box"></span><span class="n">${esc(nm)}</span>${q ? `<span class="q">${q}</span>` : ''}${c === 'Altro' ? `<button class="del" data-x="${esc(nm)}" aria-label="Rimuovi">×</button>` : ''}</div>`; }).join('')}
+    </div>`).join('');
+  };
+  draw();
+  $('#v-spesa').addEventListener('click', e => {
+    const del = e.target.closest('.del');
+    if (del) { extra = extra.filter(x => x !== del.dataset.x); done.delete(key('Altro', del.dataset.x)); save(); draw(); return; }
+    const row = e.target.closest('.chk');
+    if (row) { const k = row.dataset.k; done.has(k) ? done.delete(k) : done.add(k); save(); draw(); return; }
+    if (e.target.closest('#shop-reset') && confirm('Nuova spesa? Tutte le spunte verranno tolte.')) { done.clear(); save(); draw(); }
+  });
+  $('#shop-add').addEventListener('submit', e => {
+    e.preventDefault();
+    const v = $('#shop-in').value.trim();
+    if (v && !extra.includes(v)) { extra.push(v); save(); draw(); }
+    $('#shop-in').value = '';
+  });
 }
 
 /* ---------- Tab ---------- */
