@@ -520,7 +520,7 @@ const RECIPES = [ // pasto (Pranzo/Cena), giorno (ON/OFF), tempo, ingredienti [n
     foods: [['Pasta', '80 g'], ['Petto di pollo', '150 g'], ['Zucchine', '250 g'], ['Olio EVO', '10 g'], ['Grana', '10 g'], ['Aglio in granuli, paprika, pepe', 'liberi']],
     steps: [
       `Metti a bollire l'acqua per la pasta. Taglia il pollo a cubetti e le zucchine a rondelle.`,
-      `Padella antiaderente calda con <b>un cucchiaino</b> dell'olio (~3 g): rosola il pollo con un pizzico di paprika, 5–6 min finché è dorato.`,
+      `Padella antiaderente calda unta con <b>10–15 spruzzi</b> d'olio (~1–1,5 g): rosola il pollo con un pizzico di paprika, 5–6 min finché è dorato.`,
       `Aggiungi zucchine, aglio in granuli e un mestolino di acqua della pasta. Coperchio, 5 min.`,
       `Scola la pasta e saltala in padella per un minuto.`,
       `Nel piatto: il resto dell'olio <b>a crudo</b> e il grana pesato.`,
@@ -530,7 +530,7 @@ const RECIPES = [ // pasto (Pranzo/Cena), giorno (ON/OFF), tempo, ingredienti [n
     foods: [['Riso', '80 g'], ['Pollo o tacchino', '150 g'], ['Verdure surgelate miste', '250 g', 'senza broccoli e cavolfiore'], ['Olio EVO', '10 g'], ['Salsa di soia', '1 cucchiaio'], ['Aglio in granuli, zenzero o curry', 'liberi']],
     steps: [
       `Lessa il riso. Se lo fai la sera prima ed è freddo di frigo, in padella viene ancora meglio.`,
-      `Padella calda con 5 g di olio: salta il pollo a striscioline con aglio in granuli per 4 min.`,
+      `Padella calda con <b>15–20 spruzzi</b> d'olio (~2 g): salta il pollo a striscioline con aglio in granuli per 4 min.`,
       `Aggiungi le verdure <b>senza scongelarle</b>, 5–6 min a fuoco alto.`,
       `Aggiungi riso e soia e salta tutto per 2 min. Finisci con il resto dell'olio.`,
     ],
@@ -565,7 +565,7 @@ const RECIPES = [ // pasto (Pranzo/Cena), giorno (ON/OFF), tempo, ingredienti [n
     foods: [['Merluzzo', '200 g', 'anche surgelato'], ['Patate', '300 g'], ['Fagiolini o spinaci', '250 g', 'anche surgelati'], ['Olio EVO', '15 g'], ['Limone, prezzemolo, paprika, aglio in granuli', 'liberi']],
     steps: [
       `Patate a cubetti al <b>microonde 8 min</b> in una ciotola coperta con 2 cucchiai d'acqua.`,
-      `In teglia con carta forno, 5 g di olio e paprika, girale bene: 220 °C per 15 min. Vengono croccanti come fritte.`,
+      `In teglia con carta forno, <b>20–30 spruzzi</b> d'olio (~2–3 g) e paprika, girale bene: 220 °C per 15 min. Vengono croccanti come fritte.`,
       `Nello stesso momento in forno anche il merluzzo, con limone, prezzemolo e aglio in granuli, <b>senza olio</b>: 12–15 min.`,
       `Intanto fagiolini o spinaci in padella con un dito d'acqua e aglio in granuli, coperchio, 8–10 min.`,
       `Sul piatto il resto dell'olio a crudo, su pesce e verdure.`,
@@ -582,7 +582,7 @@ const RECIPES = [ // pasto (Pranzo/Cena), giorno (ON/OFF), tempo, ingredienti [n
     foods: [['Petto di pollo a fette', '200 g'], ['Patate', '300 g'], ['Peperoni, zucchine, cipolla', '250 g'], ['Olio EVO', '15 g'], ['Limone, rosmarino, aglio in granuli, paprika', 'liberi']],
     steps: [
       `Patate a cubetti al microonde 8 min, come sopra.`,
-      `In una teglia grande: patate e verdure a pezzi con 5 g di olio, rosmarino e aglio. 220 °C per 10 min.`,
+      `In una teglia grande: patate e verdure a pezzi con <b>20–30 spruzzi</b> d'olio (~2–3 g), rosmarino e aglio. 220 °C per 10 min.`,
       `Aggiungi il pollo con succo di limone, paprika e aglio in granuli e rimetti in forno per 12–15 min.`,
       `Il resto dell'olio a crudo nel piatto.`,
     ],
@@ -618,7 +618,7 @@ const RECIPES = [ // pasto (Pranzo/Cena), giorno (ON/OFF), tempo, ingredienti [n
     foods: [['Petto di pollo a striscioline', '200 g'], ['Verza o cavolo cappuccio', '300 g', '~¼ di verza'], ['Cipolla', '½'], ['Vino bianco', '50 ml', 'mezzo bicchiere'], ['Pane oppure patate', '90 / 300 g', 'giorno OFF: 60 / 200 g'], ['Olio EVO', '15 g'], ['Aglio in granuli, paprika, pepe', 'liberi']],
     steps: [
       `Verza a striscioline sottili, cipolla a fette.`,
-      `Padella grande con 5 g di olio: cipolla 2 min, poi la verza con mezzo bicchiere d'acqua. Coperchio, 10–12 min, finché è morbida.`,
+      `Padella grande con <b>15–20 spruzzi</b> d'olio (~2 g): cipolla 2 min, poi la verza con mezzo bicchiere d'acqua. Coperchio, 10–12 min, finché è morbida.`,
       `Sposta la verza da un lato e rosola il pollo con aglio in granuli e paprika, 4–5 min.`,
       `Versa il vino a fuoco alto e lascialo evaporare 1–2 min, finché non senti più l'odore di alcol. Mescola tutto e pepa.`,
       `Il resto dell'olio a crudo nel piatto.`,
@@ -675,8 +675,9 @@ const FREEZE_RULES = [
 
 const KITCHEN = [
   ["L'olio si pesa, sempre", `La regola più importante. Versato dalla bottiglia, 10 g diventano facilmente 30 g: <b>180 kcal in più</b> senza accorgertene. Mettilo in un cucchiaio sulla bilancia.`],
-  ['Olio a crudo, alla fine', `Cuoci in padella antiaderente ben calda con pochissimo olio (o un dito d'acqua) e aggiungi il resto sul piatto pronto. Più sapore, stessi grammi.`],
-  ['Niente fritto e niente impanato', `Pastella e panatura assorbono olio come spugne: una cotoletta può avere il doppio delle calorie del petto da cui parte. La <b>friggitrice ad aria</b> va bene, con al massimo 1 cucchiaino d'olio.`],
+  ['Olio a crudo, alla fine', `Cuoci in padella antiaderente ben calda unta con lo spray (o con un dito d'acqua) e aggiungi il resto col cucchiaio sul piatto pronto. Più sapore, stessi grammi.`],
+  ["Lo spray per l'olio", `Il tuo spray fa <b>0,1 g a spruzzo</b>: 10 spruzzi = 1 g, quindi 10 g sarebbero 100 spruzzi. Usalo per <b>ungere</b> padella, teglia e friggitrice ad aria: <ul><li><b>padella:</b> 10–20 spruzzi (1–2 g)</li><li><b>teglia di patate o verdure:</b> 20–30 spruzzi (2–3 g), poi gira bene</li></ul>L'olio <b>a crudo</b> sul piatto va col cucchiaio sulla bilancia. Il conto è semplice: <b>dose del pasto − quello spruzzato = olio a crudo</b>. Premi sempre fino in fondo, non riempirlo oltre i 90 ml e ogni 2–3 settimane sciacqualo con acqua calda e aceto, sennò si intasa.`],
+  ['Niente fritto e niente impanato', `Pastella e panatura assorbono olio come spugne: una cotoletta può avere il doppio delle calorie del petto da cui parte. La <b>friggitrice ad aria</b> va bene, con 10–20 spruzzi d'olio (1–2 g).`],
   ['I sughi "nascosti"', `Panna, burro, pesto pronto, maionese e formaggi fusi sono quasi tutto grasso. Usa passata, limone, senape, aceto balsamico, spezie ed erbe: praticamente zero calorie.`],
   ['Crudo o cotto?', `Il piano pesa a crudo. Se ti capita di pesare il cotto: <ul><li><b>pasta</b> 80 g cruda ≈ 180–200 g cotta</li><li><b>riso</b> 80 g crudo ≈ 220–240 g cotto</li><li><b>pollo</b> 150 g crudo ≈ 110 g cotto</li></ul>`],
   ['Il sale', `Non fa ingrassare, ma trattiene acqua: dopo una cena salata la bilancia può segnare +0,5 kg che non sono grasso. Moderazione, e spezie al posto del sale: <b>aglio in granuli e paprika</b> (anche affumicata) su quasi tutto, poi rosmarino, origano, curry.`],
