@@ -626,6 +626,53 @@ const RECIPES = [ // pasto (Pranzo/Cena), giorno (ON/OFF), tempo, ingredienti [n
     tip: `Il vino in cottura va bene: 50 ml sono ~35 kcal e l'alcol evapora quasi tutto. Quello da bere invece resta per il pasto libero. La verza in frigo dura 1–2 settimane: ottima se non vuoi buttare niente.` },
 ];
 
+const FREEZER = [ // cene da preparare in 4 porzioni e congelare
+  { name: 'Spezzatino di pollo, peperoni e cipolla', yield: '4 porzioni', time: '40 min',
+    foods: [['Petto di pollo a cubetti', '800 g'], ['Peperoni', '700 g', '~3 grandi'], ['Cipolle', '300 g', '2 medie'], ['Passata di pomodoro', '300 g', 'facoltativa'], ['Paprika affumicata, aglio in granuli, sale, pepe', 'liberi']],
+    steps: [
+      `Pentola larga antiaderente: peperoni e cipolla a listarelle con mezzo bicchiere d'acqua, coperchio, 10 min.`,
+      `Aggiungi il pollo con paprika e aglio in granuli e fallo rosolare a fuoco vivo 5 min, <b>senza olio</b>.`,
+      `Se vuoi il sughetto, la passata. Coperchio e 15 min a fuoco basso.`,
+      `Fai raffreddare e dividi in <b>4 contenitori</b>: ognuno ha 200 g di pollo crudo, la dose di una cena.`,
+      `<b>Per mangiarlo:</b> 3–4 min al microonde, 15 g di olio a crudo e pane (90 g ON / 60 g OFF) o patate fatte al microonde (300 / 200 g).`,
+    ],
+    tip: `Si cucina senza olio e lo aggiungi pesato quando mangi: così ogni porzione ha i conti giusti.` },
+  { name: 'Polpette di manzo al sugo', yield: '4 porzioni', time: '35 min',
+    foods: [['Macinato di manzo 5%', '800 g'], ['Albume', '1', 'o 1 uovo intero'], ['Passata di pomodoro', '700 g'], ['Cipolla', '1'], ['Aglio in granuli, paprika, origano, sale', 'liberi']],
+    steps: [
+      `Impasta carne, albume, aglio in granuli, paprika e sale. Fai <b>20 polpette</b>: 5 a porzione.`,
+      `Cipolla tritata in pentola con un dito d'acqua, 3 min, poi la passata con l'origano.`,
+      `Metti le polpette crude nel sugo, coperchio, 20 min a fuoco basso, girandole a metà.`,
+      `Raffredda e dividi in 4 contenitori: 5 polpette e il loro sugo.`,
+      `<b>Per mangiarle:</b> scaldale e intanto fai fagiolini o spinaci surgelati in padella. Olio a crudo sulle verdure, più pane o patate come sopra.`,
+    ],
+    tip: `Cotte direttamente nel sugo restano morbide: non servono olio, pangrattato né frittura.` },
+  { name: 'Burger pronti, da cuocere da congelati', yield: '4 porzioni', time: '10 min',
+    foods: [['Macinato di manzo 5%', '800 g'], ['Aglio in granuli, paprika, sale, pepe', 'liberi']],
+    steps: [
+      `Impasta la carne con le spezie e forma <b>4 burger da 200 g</b>.`,
+      `Separali con un foglio di carta forno e mettili crudi in un sacchetto gelo.`,
+      `<b>Per mangiarli:</b> non serve scongelarli. Piastra o padella calda <b>senza olio</b>, coperchio, 6–7 min per lato, finché sono cotti dentro.`,
+      `Intanto peperoni e cipolla (anche surgelati) o fagiolini in padella con un dito d'acqua. Olio a crudo sulle verdure, più pane o patate.`,
+    ],
+    tip: `È la cena per le sere senza voglia: 15 minuti e zero preparazione.` },
+  { name: 'Pollo e verza, in dose da 4', yield: '4 porzioni', time: '35 min',
+    foods: [['Petto di pollo a striscioline', '800 g'], ['Verza o cavolo cappuccio', '1,2 kg', '~1 verza'], ['Cipolle', '2'], ['Vino bianco', '200 ml'], ['Aglio in granuli, paprika, pepe', 'liberi']],
+    steps: [
+      `Segui la ricetta del <b>Pollo e verza al vino bianco</b> qui sopra con queste dosi, ma <b>senza olio</b> in cottura. Ti serve una pentola grande.`,
+      `Raffredda e dividi in 4 contenitori.`,
+      `<b>Per mangiarlo:</b> scaldalo e aggiungi 15 g di olio a crudo e il pane.`,
+    ],
+    tip: `La verza cotta si congela benissimo e scongelata è ancora più saporita.` },
+];
+
+const FREEZE_RULES = [
+  ['Come congelare', `<ul><li>Raffredda e metti in freezer <b>entro 2 ore</b> dalla cottura.</li><li>Un contenitore per porzione, con <b>nome e data</b> scritti sopra.</li><li>Si conserva <b>2–3 mesi</b>.</li></ul>`],
+  ['Come scongelare', `<ul><li>Spostalo in frigo <b>la mattina</b>: la sera è pronto da scaldare.</li><li>Se te ne dimentichi, usa il microonde con la funzione "scongela".</li><li>Quello che hai scongelato <b>non si ricongela</b>.</li></ul>`],
+  ['Il carbo si fa al momento', `Le patate congelate diventano acquose, quindi non si mettono nei contenitori. O fai <b>patate al microonde</b> (8 min), oppure tieni il <b>pane a fette in freezer</b> e lo tosti: 2 minuti e l'hai pronto.`],
+  ['Cena di emergenza, zero preparazione', `Merluzzo o platessa surgelati in forno a 220 °C per 20 min (vanno anche da congelati), verdure surgelate in padella e pane dal freezer. Olio pesato a crudo. Basta tenere sempre una busta di ciascuno.`],
+];
+
 const KITCHEN = [
   ["L'olio si pesa, sempre", `La regola più importante. Versato dalla bottiglia, 10 g diventano facilmente 30 g: <b>180 kcal in più</b> senza accorgertene. Mettilo in un cucchiaio sulla bilancia.`],
   ['Olio a crudo, alla fine', `Cuoci in padella antiaderente ben calda con pochissimo olio (o un dito d'acqua) e aggiungi il resto sul piatto pronto. Più sapore, stessi grammi.`],
@@ -830,6 +877,11 @@ function renderRicette() {
     <div id="rand"></div>
     <div class="card" id="rec-list"></div>
     <p class="foot">Grammature del piano, sempre a crudo. L'olio indicato è il totale della ricetta: pesalo.</p>
+
+    <h2>Da congelare</h2>
+    <p class="foot" style="margin:-4px 4px 10px">Cene da preparare in 4 porzioni quando hai tempo, per le sere in cui non hai voglia di cucinare.</p>
+    <div class="card">${FREEZER.map(r => `<details><summary><span>${r.name}<span class="sub">${r.yield} · si congela</span></span><span class="r mut">${r.time}</span></summary>${recipeBody(r)}</details>`).join('')}</div>
+    <div class="card">${FREEZE_RULES.map(([t, b]) => disclosure(t, b)).join('')}</div>
 
     <h2>Regole in cucina</h2>
     <div class="card">${KITCHEN.map(([t, b]) => disclosure(t, b)).join('')}</div>
