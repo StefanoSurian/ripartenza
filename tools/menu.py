@@ -82,7 +82,7 @@ EVEN = {
 # Eccezioni a date precise: (pranzo, cena), None = segui la settimana tipo
 FEAST = ('FESTA', 'Pasto delle feste: libero, senza sensi di colpa')
 OVERRIDES = {
-    date(2026, 11, 17): (None, (POLLO_LIMONE, 'stasera: 150 g di pollo + 100 g di albume (o 50 g di fesa di tacchino)')),
+    date(2026, 11, 17): ((PASTA_TONNO, ''), (POLLO_LIMONE, "dose OFF: patate 200 g · pollo 150 g a cubetti, + 100 g di albume se ce l'hai")),
     date(2026, 12, 24): (None, FEAST),
     date(2026, 12, 25): (FEAST, None),
     date(2026, 12, 26): (FEAST, None),
@@ -95,7 +95,16 @@ def week_of(d):
     return (d - START).days // 7 + 1
 
 
+# Giorni spostati rispetto alla regola (palestra la notte dopo questi giorni)
+FORCE_ON = {date(2026, 11, 18), date(2026, 11, 20)}   # settimana 1: mercoledì e venerdì
+FORCE_OFF = {date(2026, 11, 16)}                        # settimana 1: lunedì saltato
+
+
 def is_on(d):
+    if d in FORCE_ON:
+        return True
+    if d in FORCE_OFF:
+        return False
     w, k = week_of(d), d.weekday()
     return k in (0, 2) or (w >= 3 and k == 4)
 
@@ -103,7 +112,8 @@ def is_on(d):
 def workout(d):
     """Full A / Full B: settimane dispari A-B-A, pari B-A-B (nelle sett. 1–2 solo le prime due)."""
     w = week_of(d)
-    n = [k for k in (0, 2, 4) if is_on(d - timedelta(days=d.weekday() - k))].index(d.weekday())
+    mon = d - timedelta(days=d.weekday())
+    n = [k for k in range(7) if is_on(mon + timedelta(days=k))].index(d.weekday())
     return 'Full ' + ('ABA' if w % 2 else 'BAB')[n]
 
 
