@@ -145,6 +145,7 @@
   .vids{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px;}
   .vid{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--accent);text-decoration:none;background:color-mix(in srgb,var(--accent) 12%,transparent);border-radius:100px;padding:4px 11px 4px 8px;}
   .vid svg{width:13px;height:13px;fill:currentColor;}
+  .vid.yt{color:var(--label2);background:var(--fill);}
   button.vid{border:0;font:inherit;font-size:13px;font-weight:600;cursor:pointer;}
   .vid.tmr{color:var(--off);background:color-mix(in srgb,var(--off) 14%,transparent);}
   .vid.tmr svg,.vid.lg svg{fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
@@ -915,11 +916,34 @@ function renderRicette() {
 }
 
 /* ---------- Allenamento ---------- */
-// Video: il 5° campo di un esercizio può essere un testo da cercare su YouTube,
-// un link diretto a un video (https://...), oppure una lista di [etichetta, testo o link].
+// Video: il pulsante principale apre la pagina MuscleWiki in italiano (MW, per nome esercizio:
+// uno slug o una lista di [etichetta, slug]). Il pulsante "YouTube" resta come riserva e cerca
+// il 5° campo dell'esercizio (testo, link https://... o lista di [etichetta, testo]) o il nome.
+const MW = {
+  'Leg press': 'machine-leg-press',
+  'Chest press': 'machine-chest-press',
+  'Lat machine': 'machine-pulldown',
+  'Leg curl seduto': 'machine-seated-leg-curl',
+  'Alzate laterali manubri': 'dumbbell-lateral-raise',
+  'Plank': 'forearm-plank',
+  'Goblet squat': 'dumbbell-goblet-squat',
+  'Pulley': 'machine-seated-cable-row',
+  'Panca manubri': 'dumbbell-bench-press',
+  'Ponte glutei / hip thrust': [['Ponte', 'glute-bridge'], ['Hip thrust', 'barbell-hip-thrust']],
+  'Shoulder press macchina': 'machine-overhand-overhead-press',
+  'Curl manubri + push-down ai cavi': [['Curl', 'dumbbell-curl'], ['Push-down', 'cable-rope-pushdown']],
+  'Dead bug': 'dead-bug',
+};
+const ICON_PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg>';
 const videoUrl = q => q.startsWith('http') ? q : 'https://www.youtube.com/results?search_query=' + encodeURIComponent(q + ' esecuzione corretta');
-const videoLinks = (name, vid) => (Array.isArray(vid) ? vid : [['Video', vid || name]]).map(([l, q]) =>
-  `<a class="vid" href="${videoUrl(q)}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg>${l}</a>`).join('');
+const vidA = (href, label, cls = '') => `<a class="vid${cls}" href="${href}" target="_blank" rel="noopener">${ICON_PLAY}${label}</a>`;
+const videoLinks = (name, vid) => {
+  const yt = Array.isArray(vid) ? vid : [['Video', vid || name]];
+  const mw = MW[name];
+  if (!mw) return yt.map(([l, q]) => vidA(videoUrl(q), l)).join('');
+  return (Array.isArray(mw) ? mw : [['Video', mw]]).map(([l, s]) => vidA('https://musclewiki.com/it-it/exercise/' + s, l)).join('')
+    + vidA(videoUrl(Array.isArray(vid) ? name : (vid || name)), 'YouTube', ' yt');
+};
 
 // "2′" → 120, "90″" → 90 · "3×10–12" → 3 serie, massimo 12
 const restSec = s => { const m = /(\d+)\s*([′″])/.exec(s); return m ? +m[1] * (m[2] === '′' ? 60 : 1) : 0; };
