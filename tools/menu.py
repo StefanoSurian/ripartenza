@@ -35,7 +35,11 @@ PASTA_POLLO = 'Pasta, pollo e zucchine'
 WOK = 'Riso saltato stile wok'
 PASTA_TONNO = 'Pasta al pomodoro, tonno e capperi'
 INSALATA = 'Insalata fredda di riso e tonno'
+RAGU = 'Pasta al ragù magro'
+RISO_PISELLI = 'Riso, piselli e pollo'
+PATATE_TONNO = 'Insalata di patate, fagiolini e tonno'
 MERLUZZO = 'Merluzzo al forno con patate croccanti'
+PIZZAIOLA = 'Merluzzo alla pizzaiola con patate'
 SALMONE = 'Salmone in padella'
 POLLO_LIMONE = 'Pollo al limone con verdure in teglia'
 POLLO_VERZA = 'Pollo e verza al vino bianco'
@@ -46,11 +50,16 @@ FREEZER = ['Spezzatino di pollo, peperoni e cipolla', 'Polpette di manzo al sugo
            'Burger pronti, da cuocere da congelati', 'Pollo e verza, in dose da 4']
 FREEZER_SHORT = ['spezzatino di pollo', 'polpette al sugo', 'burger pronti', 'pollo e verza']
 
-ON_RECIPES = {PASTA_POLLO, WOK, MERLUZZO, SALMONE, POLLO_LIMONE, POLLO_VERZA}
+ON_RECIPES = {PASTA_POLLO, WOK, RAGU, RISO_PISELLI, MERLUZZO, PIZZAIOLA, SALMONE, POLLO_LIMONE, POLLO_VERZA}
+
+# Pranzi freddi da preparare la sera prima, anche per più giorni
+COLD = {INSALATA: "l'insalata fredda di riso", PATATE_TONNO: "l'insalata di patate, fagiolini e tonno"}
 
 # Cosa tirare fuori dal freezer (None = niente da scongelare)
 THAW = {
-    PASTA_POLLO: 'il pollo da 150 g', WOK: 'il pollo da 150 g',
+    PASTA_POLLO: 'il pollo da 150 g', WOK: 'il pollo da 150 g', RISO_PISELLI: 'il pollo da 150 g',
+    RAGU: "il macinato da 130 g (o 1 contenitore di ragù, se l'hai congelato)",
+    PIZZAIOLA: 'il merluzzo, se è surgelato',
     POLLO_LIMONE: 'il pollo da 200 g', POLLO_VERZA: 'il pollo da 200 g',
     MERLUZZO: 'il merluzzo, se è surgelato', SALMONE: 'il salmone, se è surgelato',
     BURGER: 'il macinato da 200 g, se è surgelato',
@@ -60,7 +69,8 @@ THAW = {
 
 # Settimana tipo: dispari (1, 3, 5…) e pari (2, 4…). 'FRZ' = cena dal freezer (dalla settimana 2).
 # Il venerdì ha due versioni: OFF (settimane 1–2) e ON (dalla 3ª, quando diventa giorno di palestra).
-ODD = {
+# Settimana 1: quella già iniziata, con le ricette di prima.
+WEEK1 = {
     0: (PASTA_POLLO, POLLO_LIMONE),
     1: (INSALATA, ('FRZ', TACCHINO)),
     2: (WOK, MERLUZZO),
@@ -69,13 +79,22 @@ ODD = {
     5: (WOK, 'LIBERO'),
     6: (PASTA_POLLO, POLLO_VERZA),
 }
+ODD = {
+    0: (PASTA_POLLO, POLLO_LIMONE),
+    1: (INSALATA, ('FRZ', TACCHINO)),
+    2: (WOK, MERLUZZO),
+    3: (INSALATA, ('FRZ', FRITTATA)),
+    4: {'off': (PASTA_TONNO, BURGER), 'on': (RAGU, SALMONE)},
+    5: (RISO_PISELLI, 'LIBERO'),
+    6: (PASTA_TONNO, POLLO_VERZA),
+}
 EVEN = {
     0: (WOK, SALMONE),
-    1: (PASTA_TONNO, ('FRZ', TACCHINO)),
-    2: (PASTA_POLLO, POLLO_VERZA),
-    3: (INSALATA, ('FRZ', FRITTATA)),
-    4: {'off': (INSALATA, TACCHINO), 'on': (WOK, MERLUZZO)},
-    5: (PASTA_POLLO, 'LIBERO'),
+    1: (PATATE_TONNO, ('FRZ', TACCHINO)),
+    2: (PASTA_POLLO, PIZZAIOLA),
+    3: (PATATE_TONNO, ('FRZ', FRITTATA)),
+    4: {'off': (RISO_PISELLI, TACCHINO), 'on': (RISO_PISELLI, POLLO_VERZA)},
+    5: (RAGU, 'LIBERO'),
     6: (PASTA_TONNO, FRITTATA),
 }
 
@@ -125,7 +144,7 @@ def freezer_for(w):
 def carbs_note(slot, recipe, on):
     if slot == 'l':
         if not on and recipe in ON_RECIPES:
-            return 'dose OFF: ' + ('riso' if recipe == WOK else 'pasta') + ' 70 g'
+            return 'dose OFF: ' + {WOK: 'riso 70 g', RISO_PISELLI: 'riso 40 g, piselli sempre 150 g'}.get(recipe, 'pasta 70 g')
         return ''
     if recipe in FREEZER:
         return 'con pane 90 g o patate 300 g' if on else 'con pane 60 g o patate 200 g'
@@ -136,7 +155,7 @@ def carbs_note(slot, recipe, on):
 
 def plan_day(d):
     w, k, on = week_of(d), d.weekday(), is_on(d)
-    tpl = (ODD if w % 2 else EVEN)[k]
+    tpl = (WEEK1 if w == 1 else ODD if w % 2 else EVEN)[k]
     if isinstance(tpl, dict):
         tpl = tpl['on' if on else 'off']
     lunch, dinner = tpl
@@ -182,12 +201,12 @@ def build():
             tl = nxt['l'].get('r')
             if tl in THAW:
                 x['todo'].append(['19:45', f"Per il pranzo di domani tira fuori {THAW[tl]} e mettilo in frigo"])
-            if tl == INSALATA and nxt['d'] not in covered:
-                later = [y for y in (by.get((d + timedelta(days=j)).isoformat()) for j in (2, 3)) if y and y['l'].get('r') == INSALATA][:1]
+            if tl in COLD and nxt['d'] not in covered:
+                later = [y for y in (by.get((d + timedelta(days=j)).isoformat()) for j in (2, 3)) if y and y['l'].get('r') == tl][:1]
                 covered.update(y['d'] for y in later)
                 n = 1 + len(later)
                 when = f" (l'altra è per {DOW[date.fromisoformat(later[0]['d']).weekday()].lower()})" if later else ''
-                x['todo'].append(['19:45', f"Prepara l'insalata fredda per domani: {n} porzion{'i' if n > 1 else 'e'}{when}, condita al momento"])
+                x['todo'].append(['19:45', f"Prepara {COLD[tl]} per domani: {n} porzion{'i' if n > 1 else 'e'}{when}, da condire al momento"])
         # sabato prima: controlla di avere gli ingredienti
         if d.weekday() == 5 and x['w'] % 2 and x['w'] < WEEKS:
             x['todo'].append(['10:00', f"Domani si cucina per il freezer: {FREEZER_SHORT[freezer_for(x['w'] + 1)]}. Controlla di avere gli ingredienti (Ricette → Da congelare)"])
