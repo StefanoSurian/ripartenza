@@ -804,13 +804,14 @@ async function importSteps() {
   STEPS.merge(got); renderPassi();
 }
 
-const STEPS_HOWTO = `<p><b>1. Zepp → Salute</b> (una volta sola). Nell'app Zepp: <b>Profilo → Aggiungi account → Apple Salute</b>, e consenti a Zepp di scrivere i <b>Passi</b>.</p>
-<p><b>2. Il comando rapido</b> (una volta sola). Apri Comandi Rapidi, tocca <b>+</b>, chiamalo <b>Ripartenza passi</b> e aggiungi queste azioni:</p>
-<ul><li><b>Trova campioni di Salute</b>: tipo <b>Passi</b>, "Data di inizio" <b>negli ultimi 7 giorni</b>, Raggruppa per <b>Ora</b>.</li>
-<li><b>Ripeti con ognuno</b> sui campioni trovati. Dentro mettici un'azione <b>Testo</b> con: la variabile <i>Elemento ripetuto</i> → <b>Data di inizio</b>, formato data Personalizzato <b>yyyy-MM-dd HH</b>, poi il segno <b>=</b>, poi <i>Elemento ripetuto</i> → <b>Valore</b>.</li>
-<li><b>Combina testo</b>: "Risultati ripetizione", separatore personalizzato <b>;</b></li>
-<li><b>Copia negli appunti</b>.</li></ul>
-<p><b>3. Quando vuoi aggiornare:</b> lancia il comando (anche dal widget o con Siri), apri Ripartenza e tocca <b>Importa dall'orologio</b>. Prende sempre gli ultimi 7 giorni: non serve farlo tutti i giorni.</p>`;
+const STEPS_HOWTO = `<p><b>1. Zepp → Salute</b> (una volta sola). Nell'app Zepp: <b>Profilo → Aggiungi account → Apple Salute</b>. Se dice già "collegato", è fatto.</p>
+<p><b>2. Il comando rapido</b> (una volta sola). Comandi Rapidi è un'app di Apple già sull'iPhone (icona con due quadrati colorati; se l'hai tolta, riscaricala gratis dall'App Store). Aprila, tocca <b>+</b> in alto a destra e chiama il comando <b>Ripartenza passi</b>. Poi, con <b>Cerca azioni</b> in basso, aggiungi in quest'ordine:</p>
+<ul><li><b>Trova campioni di Salute</b>: tipo <b>Passi</b>, Data di inizio <b>negli ultimi 7 giorni</b>; sotto "Mostra di più", Raggruppa per <b>Ora</b>.</li>
+<li><b>Ripeti con ognuno</b>.</li>
+<li><b>Testo</b>, dentro la ripetizione. Nel riquadro: tocca la variabile <i>Elemento ripetuto</i>, poi toccala di nuovo e scegli <b>Data di inizio</b>, Formato data <b>Personalizzato</b>, e scrivi <b>yyyy-MM-dd HH</b>. Subito dopo scrivi <b>=</b> e aggiungi ancora <i>Elemento ripetuto</i>, scegliendo <b>Valore</b>.</li>
+<li><b>Copia negli appunti</b>, dopo "Fine ripetizione".</li></ul>
+<p>La prima volta che lo lanci chiede di leggere Salute: tocca <b>Consenti</b>.</p>
+<p><b>3. Quando vuoi aggiornare:</b> tocca il comando, apri Ripartenza, tocca <b>Importa dall'orologio</b> e poi <b>Incolla</b>. Prende sempre gli ultimi 7 giorni: non serve farlo tutti i giorni.</p>`;
 
 function renderPassi() {
   const el = $('#passi'); if (!el) return;
